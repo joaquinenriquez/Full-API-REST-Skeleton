@@ -110,3 +110,7 @@
 [2019-06-13 16:20:32] UTN FRA LOGGER.INFO: ip =::1 [] {"uid":"434586f"}
 [2019-06-13 16:20:40] UTN FRA LOGGER.INFO: Datos  =PostmanRuntime/7.1.1 [] {"uid":"87cac8e"}
 [2019-06-13 16:20:40] UTN FRA LOGGER.INFO: ip =::1 [] {"uid":"87cac8e"}
+[2020-02-02 22:21:06] UTN FRA LOGGER.INFO: Datos  =Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36 [] {"uid":"5e0d915"}
+[2020-02-02 22:21:06] UTN FRA LOGGER.INFO: ip =::1 [] {"uid":"5e0d915"}
+[2020-02-02 22:21:16] UTN FRA LOGGER.INFO: Datos  =Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36 [] {"uid":"12e83df"}
+[2020-02-02 22:21:16] UTN FRA LOGGER.INFO: ip =::1 [] {"uid":"12e83df"}

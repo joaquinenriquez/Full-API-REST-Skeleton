@@ -74,3 +74,7 @@
 [2019-06-13 16:20:00] UTN FRA LOGGER.INFO: metodo=GET, URI=http%3A%2F%2Flocalhost%2FFull-API-REST-Skeleton%2Fpublic, RUTA=JWT%2F, autoridad=localhost [] {"uid":"681fbe6"}
 [2019-06-13 16:20:32] UTN FRA LOGGER.INFO: metodo=GET, URI=http%3A%2F%2Flocalhost%2FFull-API-REST-Skeleton%2Fpublic, RUTA=JWT%2F, autoridad=localhost [] {"uid":"1ef71a1"}
 [2019-06-13 16:20:40] UTN FRA LOGGER.INFO: metodo=GET, URI=http%3A%2F%2Flocalhost%2FFull-API-REST-Skeleton%2Fpublic, RUTA=JWT%2F, autoridad=localhost [] {"uid":"9dfad57"}
+[2020-02-02 22:21:06] UTN FRA LOGGER.INFO: metodo=GET, URI=http%3A%2F%2Flocalhost%2Fapi%2Fpublic, RUTA=%2F, autoridad=localhost [] {"uid":"218ae7b"}
+[2020-02-02 22:21:07] UTN FRA LOGGER.INFO: Slim-Skeleton '/' route [] {"uid":"218ae7b"}
+[2020-02-02 22:21:16] UTN FRA LOGGER.INFO: metodo=GET, URI=http%3A%2F%2Flocalhost%2Fapi%2Fpublic, RUTA=asd, autoridad=localhost [] {"uid":"58ff7df"}
+[2020-02-02 22:21:16] UTN FRA LOGGER.INFO: Slim-Skeleton '/' route [] {"uid":"58ff7df"}

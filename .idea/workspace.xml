@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a042b7ed-b2f2-47ea-b200-d3c033d6ec38" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/app/model/sectorDAO.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/../composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/composer/autoload_psr4.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/composer/autoload_psr4.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/composer/autoload_static.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/composer/autoload_static.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/composer/installed.json" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/composer/installed.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/App.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/App.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/CallableResolver.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/CallableResolver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/DeferredCallable.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/AbstractErrorRenderer.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/AbstractErrorRenderer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/Renderers/HtmlErrorRenderer.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/Renderers/HtmlErrorRenderer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/Renderers/JsonErrorRenderer.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/Renderers/JsonErrorRenderer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/Renderers/PlainTextErrorRenderer.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/Renderers/PlainTextErrorRenderer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/Renderers/XmlErrorRenderer.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Error/Renderers/XmlErrorRenderer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpBadRequestException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpBadRequestException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpForbiddenException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpForbiddenException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpInternalServerErrorException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpInternalServerErrorException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpMethodNotAllowedException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpMethodNotAllowedException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpNotFoundException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpNotFoundException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpNotImplementedException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpNotImplementedException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpSpecializedException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpSpecializedException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpUnauthorizedException.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Exception/HttpUnauthorizedException.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/AppFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/AppFactory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/GuzzlePsr17Factory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/GuzzlePsr17Factory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/NyholmPsr17Factory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/NyholmPsr17Factory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/Psr17Factory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/Psr17Factory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/Psr17FactoryProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/Psr17FactoryProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/ServerRequestCreator.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/ServerRequestCreator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/SlimHttpPsr17Factory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/SlimHttpPsr17Factory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/SlimHttpServerRequestCreator.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/SlimHttpServerRequestCreator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/SlimPsr17Factory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/SlimPsr17Factory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/ZendDiactorosPsr17Factory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/Psr17/ZendDiactorosPsr17Factory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/ServerRequestCreatorFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Factory/ServerRequestCreatorFactory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Handlers/ErrorHandler.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Handlers/ErrorHandler.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Handlers/Strategies/RequestHandler.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Handlers/Strategies/RequestHandler.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Handlers/Strategies/RequestResponse.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Handlers/Strategies/RequestResponse.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Handlers/Strategies/RequestResponseArgs.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Handlers/Strategies/RequestResponseArgs.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/CallableResolverInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/CallableResolverInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/DispatcherInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/DispatcherInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/ErrorHandlerInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/ErrorHandlerInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/ErrorRendererInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/ErrorRendererInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/InvocationStrategyInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/InvocationStrategyInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/Psr17FactoryInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/Psr17FactoryInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/Psr17FactoryProviderInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/Psr17FactoryProviderInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteCollectorInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteCollectorInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteCollectorProxyInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteCollectorProxyInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteGroupInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteGroupInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteParserInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteParserInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteResolverInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/RouteResolverInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/ServerRequestCreatorInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Interfaces/ServerRequestCreatorInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/ContentLengthMiddleware.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/ContentLengthMiddleware.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/ErrorMiddleware.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/ErrorMiddleware.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/MethodOverrideMiddleware.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/MethodOverrideMiddleware.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/OutputBufferingMiddleware.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/OutputBufferingMiddleware.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/RoutingMiddleware.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Middleware/RoutingMiddleware.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/MiddlewareDispatcher.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/MiddlewareDispatcher.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/ResponseEmitter.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/ResponseEmitter.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/Dispatcher.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/Dispatcher.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/FastRouteDispatcher.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/FastRouteDispatcher.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/Route.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/Route.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteCollector.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteCollector.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteCollectorProxy.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteCollectorProxy.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteContext.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteContext.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteGroup.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteGroup.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteParser.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteParser.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteResolver.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteResolver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteRunner.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RouteRunner.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RoutingResults.php" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/Slim/Routing/RoutingResults.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../vendor/slim/slim/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/../vendor/slim/slim/composer.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution>
+      <executable />
+    </execution>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/inflector" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/vendor/illuminate/contracts" />
+      <path value="$PROJECT_DIR$/vendor/illuminate/database" />
+      <path value="$PROJECT_DIR$/vendor/illuminate/container" />
+      <path value="$PROJECT_DIR$/vendor/illuminate/support" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/monolog/monolog" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/type-resolver" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
+      <path value="$PROJECT_DIR$/vendor/nikic/fast-route" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-common" />
+      <path value="$PROJECT_DIR$/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/vendor/psr/simple-cache" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/vendor/container-interop/container-interop" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-token-stream" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/vendor/symfony/translation-contracts" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/vendor/symfony/translation" />
+      <path value="$PROJECT_DIR$/vendor/phpspec/prophecy" />
+      <path value="$PROJECT_DIR$/vendor/firebase/php-jwt" />
+      <path value="$PROJECT_DIR$/vendor/nesbot/carbon" />
+      <path value="$PROJECT_DIR$/vendor/slim/slim" />
+      <path value="$PROJECT_DIR$/vendor/slim/php-view" />
+      <path value="$PROJECT_DIR$/vendor/pimple/pimple" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/resource-operations" />
+      <path value="$PROJECT_DIR$/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/code-unit-reverse-lookup" />
+    </include_path>
+  </component>
+  <component name="ProjectId" id="1XJpllwRnRTf7yXxRo4CZ8RlkZ1" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+  <component name="RunManager">
+    <configuration name="phpunit.xml" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+      <TestRunner scope="XML" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a042b7ed-b2f2-47ea-b200-d3c033d6ec38" name="Default Changelist" comment="" />
+      <created>1580774209815</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1580774209815</updated>
+      <workItem from="1580774230213" duration="442000" />
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="390" y="198" key="com.intellij.ide.util.TipDialog" timestamp="1580774229543">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="390" y="198" key="com.intellij.ide.util.TipDialog/0.0.1366.738@0.0.1366.738" timestamp="1580774229543" />
+  </component>
+</project>
