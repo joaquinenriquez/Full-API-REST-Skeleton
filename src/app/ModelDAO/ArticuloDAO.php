@@ -95,27 +95,31 @@ class ArticuloDAO extends Articulo
         return $auxReturn;
     }
 
-    public static function CargarUno(Sector $nuevoSector)
+    public static function CargarUno($parametros)
     {
         $auxReturn = false;
+        $ubicacionParaMensaje = "Articulo->CargarUno";
 
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "INSERT INTO sectores (descripcion, estado) VALUES (:descripcion, 1)";
+            $auxQuerySQL = "INSERT INTO articulos (Descripcion, idSector, importe, estado) VALUES (:descripcion, :idSector, :importe, 1)";            
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-            $querySQL->bindValue(":descripcion", $nuevoSector->getDescripcionArticulo());
+            
+            $querySQL->bindValue(":descripcion", $parametros["descripcion"]);
+            $querySQL->bindValue(":idSector", $parametros["idSector"]);
+            $querySQL->bindValue(":importe", $parametros["importe"]);
 
             if ($querySQL->execute()) {
                 $auxReturn = new ResponseJSON(ResponseJSONEstados::OK, "Sector guardado correctamente");
             } else {
-                $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_GENERAL, "No se pudo guardar el sector");
+                $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_GENERAL, "No se pudo guardar");
             }
 
         } catch (PDOException $unErrorDB) {
-            $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_DB, "Ocurrio un error con la conexion con la base de datos (Sector->CargarUno)." . $unErrorDB->getMessage());
+            $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_DB, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)." . $unErrorDB->getMessage());
         } catch (Exception $unError) {
-            $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_DB, "Ocurrio un error al intentar guardar un nuevo sector (Sector->CargarUno)." . $unError->getMessage());
+            $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_DB, "Ocurrio un error al intentar guardar ($ubicacionParaMensaje)." . $unError->getMessage());
         }
 
         return $auxReturn;
@@ -124,16 +128,17 @@ class ArticuloDAO extends Articulo
     public static function BorrarUno($idArticulo)
     {
         $auxReturn = false;
+        $ubicacionParaMensaje = "Articulo->BorrarUno";
 
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "UPDATE sectores SET estado = 0 WHERE idArticulo = :idArticulo AND estado = 1";
+            $auxQuerySQL = "UPDATE articulos SET estado = 0 WHERE idArticulo = :idArticulo AND estado != 0";
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
             $querySQL->bindValue(":idArticulo", $idArticulo);
 
             if (!$querySQL->execute()) {
-                $auxReturn = new responseJSON(responseJSONEstados::ERROR_BORRAR, "Ocurrio un error al intentar eliminar un sector (Sector->BorrarUno)" . $unError->getMessage());
+                $auxReturn = new responseJSON(responseJSONEstados::ERROR_BORRAR, "Ocurrio un error al intentar eliminar ($ubicacionParaMensaje)." . $unError->getMessage());
             } else {
                 if ($querySQL->rowCount() > 0) {
                     $auxReturn = new responseJSON(responseJSONEstados::OK, "El sector se elimino correctamente");
@@ -143,9 +148,9 @@ class ArticuloDAO extends Articulo
             }
 
         } catch (PDOException $unErrorDB) {
-            $auxReturn = new responseJSON(responseJSONEstados::ERROR_DB, "Ocurrio un error al intentar eliminar un sector (Sector->BorrarUno)." . $unErrorDB->getMessage());
+            $auxReturn = new responseJSON(responseJSONEstados::ERROR_DB, "Ocurrio un error al intentar eliminar un sector ($ubicacionParaMensaje)." . $unErrorDB->getMessage());
         } catch (Exception $unError) {
-            $auxReturn = new responseJSON(responseJSONEstados::ERROR_BORRAR, "Ocurrio un error al intentar eliminar un sector (Sector->BorrarUno)" . $unError->getMessage());
+            $auxReturn = new responseJSON(responseJSONEstados::ERROR_BORRAR, "Ocurrio un error al intentar eliminar un sector ($ubicacionParaMensaje)" . $unError->getMessage());
         }
 
         return $auxReturn;
@@ -154,13 +159,18 @@ class ArticuloDAO extends Articulo
     public static function ModificarUno($idArticulo, $parametros)
     {
         $auxReturn = false;
+        $ubicacionParaMensaje = "Articulo->ModificarUno";
+        
 
         try {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "UPDATE sectores SET descripcion = :descripcion WHERE idArticulo = :idArticulo AND estado = 1";
+            $auxQuerySQL = "UPDATE articulos SET descripcion = :descripcion, idSector = :idSector, importe = :importe  WHERE idArticulo = :idArticulo AND estado = 1";
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-            $querySQL->bindValue(":descripcion", $parametros["descripcion"]);
+            
             $querySQL->bindValue(":idArticulo", $idArticulo);
+            $querySQL->bindValue(":descripcion", $parametros["descripcion"]);
+            $querySQL->bindValue(":idSector", $parametros["idSector"]);
+            $querySQL->bindValue(":importe", $parametros["importe"]);
 
             if (!$querySQL->execute()) {
                 $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_GENERAL, "Ocurrio un error al intentar actualizar el sector (Sector->ModificarUno)");
@@ -176,6 +186,45 @@ class ArticuloDAO extends Articulo
             $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_DB, "Ocurrio un error al intentar actualizar el sector (Sector->ModificarUno)");
         } catch (Exception $unError) {
             $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_GENERAL, "Ocurrio un error al intentar actualizar el sector (Sector->ModificarUno)");
+        }
+
+        return $auxReturn;
+
+    }
+
+    public static function VerificarEstado($idArticulo)
+    {
+        $auxReturn = false;
+        $ubicacionParaMensaje = "ArticuloDAO->VerificarEstado";
+        $rows = [];
+
+        try
+        {
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = "SELECT estado FROM Articulos WHERE estado != 0 AND idArticulo = :idArticulo";
+
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            $querySQL->bindValue(':idArticulo', $idArticulo, PDO::PARAM_INT);
+
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == true) {
+
+                if ($querySQL->rowCount() > 0) {
+                    $rows = $querySQL->fetch();
+                    $auxReturn = new Resultado(false, $rows["estado"], EstadosError::OK);
+                } else {
+                    $auxReturn = new Resultado(false, "El articulo no existe o se encuentra deshabilitado", EstadosError::SIN_RESULTADOS);
+                }
+            } else {
+                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_GENERAL);
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer el dato ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_GENERAL);
         }
 
         return $auxReturn;

@@ -6,16 +6,16 @@ class ResponseJSON implements JsonSerializable
 {
 
 /* #region  Constructores */
-public function __construct($estado, $mensaje) 
+public function __construct($status, $mensaje) 
 {
-    $this->setEstado($estado);
+    $this->setStatus($status);
     $this->setMensaje($mensaje);
 }
 /* #endregion */
 
 /* #region  Atributos */
 
-    private $estado;
+    private $status;
     private $mensaje;
 
 /* #endregion */
@@ -44,7 +44,7 @@ public function __construct($estado, $mensaje)
     /**
      * Get the value of estado
      */ 
-    public function getEstado()
+    public function getStatus()
     {
         return $this->estado;
     }
@@ -54,9 +54,9 @@ public function __construct($estado, $mensaje)
      *
      * @return  self
      */ 
-    public function setEstado($estado)
+    public function setStatus($status)
     {
-        $this->estado = $estado;
+        $this->estado = $status;
 
         return $this;
     }
@@ -66,7 +66,7 @@ public function jsonSerialize()
 {   
     return 
     [
-        'estado' => $this->getEstado(),
+        'estado' => $this->getStatus(),
         'mensaje' => $this->getMensaje()
     ];
 

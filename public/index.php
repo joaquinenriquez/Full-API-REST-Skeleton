@@ -7,6 +7,11 @@
 include_once '../entorno.php';
 require_once '../src/app/modelAPI/SectorApi.php';
 require_once '../src/app/modelAPI/ArticuloApi.php';
+require_once '../src/app/modelAPI/MesaApi.php';
+require_once '../src/app/model/CabeceraPedido.php';
+require_once '../src/app/modelAPI/CabeceraPedidoApi.php';
+
+require_once '../src/app/modelAPI/ItemPedidoApi.php';
 
 //$settings = require __DIR__ . '/../src/settings.php';
 
@@ -32,6 +37,29 @@ $app->group('/articulos', function () {
     $this->delete('/{id}', \ArticuloApi::class . ':BorrarUno');
     $this->put('/{id}', \ArticuloApi::class . ':ModificarUno');
 
+});
+
+$app->group('/mesas', function () {
+
+    $this->get('', \MesaApi::class . ':TraerTodos');
+    $this->get('/{id}', \MesaApi::class . ':TraerUno');
+    $this->post('', \MesaApi::class . ':CargarUno');
+    $this->delete('/{id}', \MesaApi::class . ':BorrarUno');
+    $this->put('/{id}', \MesaApi::class . ':ModificarUno');
+    $this->get('/abrirmesa/{id}', \MesaApi::class . ':AbrirMesa');
+
+});
+
+$app->group('/itempedido', function () {
+    $this->get('/{id}', \ItemPedidoApi::class . ':CargarUno' );
+    $this->get('', \ItemPedidoApi::class . ':TraerTodosLosPendientes');
+});
+
+
+$app->group('/pruebas', function () {
+
+    //$this->get('', \CabeceraPedido::class . ':GenerarCodigo');
+$this->get('/{id}', \CabeceraPedidoApi::class . ':TraerPedidoPorMesa');
 });
 
 

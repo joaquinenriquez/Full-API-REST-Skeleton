@@ -1,6 +1,6 @@
 <?php
 
-class Mesa 
+class Mesa implements jsonSerializable
 {
 /* #region  Atributos */
     private $idMesa;
@@ -11,7 +11,7 @@ class Mesa
 /* #region  Propiedades */
     /**
      * Get the value of idMesa
-     */ 
+     */
     public function getIdMesa()
     {
         return $this->idMesa;
@@ -21,7 +21,7 @@ class Mesa
      * Set the value of idMesa
      *
      * @return  self
-     */ 
+     */
     public function setIdMesa($idMesa)
     {
         $this->idMesa = $idMesa;
@@ -31,7 +31,7 @@ class Mesa
 
     /**
      * Get the value of numeroMesa
-     */ 
+     */
     public function getNumeroMesa()
     {
         return $this->numeroMesa;
@@ -41,7 +41,7 @@ class Mesa
      * Set the value of numeroMesa
      *
      * @return  self
-     */ 
+     */
     public function setNumeroMesa($numeroMesa)
     {
         $this->numeroMesa = $numeroMesa;
@@ -51,7 +51,7 @@ class Mesa
 
     /**
      * Get the value of estado
-     */ 
+     */
     public function getEstado()
     {
         return $this->estado;
@@ -61,7 +61,7 @@ class Mesa
      * Set the value of estado
      *
      * @return  self
-     */ 
+     */
     public function setEstado($estado)
     {
         $this->estado = $estado;
@@ -70,6 +70,16 @@ class Mesa
     }
 /* #endregion */
 
-}
+    public function jsonSerialize()
+    {
+        return
+            [
+            'idMesa' => $this->getIdMesa(),
+            'nroMesa' => $this->getNumeroMesa(),
+            'estado' => $this->getEstado(),
+        ];
+    }
 
-?>
+
+
+}
