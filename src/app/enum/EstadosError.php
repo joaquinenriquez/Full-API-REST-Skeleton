@@ -6,6 +6,7 @@ abstract class EstadosError
     
     public const NO_SE_ENCONTRO_RECURSO = 404;
     public const ERROR_PARAMETROS_SIN_DEFINIR = 401;
+    public const ERROR_VALIDACION = 401;
     public const ERROR_PARAMETROS_INVALIDO = 402;
     public const ERROR_VALOR_REPETIDO = 403;
     

@@ -1,6 +1,8 @@
 <?php
 
 require_once "../src/app/model/Usuario.php";
+require_once "../src/app/modelAPI/AutentificadorJWT.php";
+require_once "../src/app/modelAPI/TokenSeguridad.php";
 
 class UsuarioDAO
 {
@@ -9,9 +11,66 @@ class UsuarioDAO
         return "asd";
     }
 
-    public static function Login()
+    public static function Login(string $nombreUsuario, string $password)
     {
+        $auxReturn = false;
+        $ubicacionParaMensaje = "UsuarioDAO->Login";
+        $rows = [];
+        $unUsuario = new Usuario();
 
+        try
+        {
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = "SELECT id_usuario, nombre_usuario, password, nombre, apellido, id_sector, estado FROM usuarios WHERE estado != 0 AND nombre_usuario = :nombre_usuario";
+            
+            $querySQLPreparada = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            $querySQLPreparada->bindValue(':nombre_usuario', $nombreUsuario, PDO::PARAM_STR);
+
+            $estadoQuery = $querySQLPreparada->execute();
+
+            if ($estadoQuery == true) {
+
+                if ($querySQLPreparada->rowCount() > 0) {
+                    $rows = $querySQLPreparada->fetch();
+
+                    if (password_verify($password, $rows["password"])) {
+                        $unUsuario->setNombreUsuario($rows["nombre_usuario"]);
+                        $unUsuario->setIdUsuario($rows["id_usuario"]);
+                        $unUsuario->setNombre($rows["nombre"]);
+                        $unUsuario->setApellido($rows["apellido"]);
+                        $unUsuario->setSector($rows["id_sector"]);
+                        $unUsuario->setEstado($rows["estado"]);
+
+                        $datosToken = array(
+                                            "id_usuario" => $unUsuario->getIdUsuario(),
+                                            "id_sector" => $unUsuario->getSector()
+                                        );
+
+                        $token = TokenSeguridad::CrearUno($datosToken);
+
+                        $auxReturn = new Resultado(false,"Login correcto. TOKEN:" . $token, EstadosError::OK);
+                    } else {
+                        $auxReturn = new Resultado(false,"Password Incorrecto", EstadosError::ERROR_VALIDACION);
+                    }
+
+                    var_dump($unUsuario);
+
+                   
+                } else {
+                    $auxReturn = new Resultado(false, "No existe un usuario con ese nombre", EstadosError::ERROR_VALIDACION);
+                }
+            } else {
+                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_GENERAL);
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer el dato ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_GENERAL);
+        }
+
+        return $auxReturn;
     }
 
     public static function CargarUno(Usuario $nuevo)
@@ -32,6 +91,8 @@ class UsuarioDAO
                 apellido = :apellido,
                 id_sector = :id_sector,
                 estado = 1";
+
+            $nuevo->HashPassword();
 
             $querySQLPreparada = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
             $querySQLPreparada->bindValue(":nombre_usuario", $nuevo->getNombreUsuario());

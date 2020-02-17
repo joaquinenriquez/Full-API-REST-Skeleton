@@ -3,6 +3,7 @@
 class Usuario implements jsonSerializable
 {
 /* #region  Atributos */
+    private $idUsuario;
     private $nombreUsuario;
     private $password;
     private $nombre;
@@ -132,6 +133,32 @@ class Usuario implements jsonSerializable
 
         return $this;
     }
+
+    public function HashPassword() {
+        $passwordHasheada = password_hash($this->getPassword(), PASSWORD_BCRYPT);
+        $this->setPassword($passwordHasheada);
+    }
+
+        /**
+     * Get the value of id_usuario
+     */ 
+    public function getIdUsuario()
+    {
+        return $this->idUsuario;
+    }
+
+    /**
+     * Set the value of id_usuario
+     *
+     * @return  self
+     */ 
+    public function setIdUsuario($idUsuario)
+    {
+        $this->idUsuario = $idUsuario;
+
+        return $this;
+    }
+
 /* #endregion */
 
     public function jsonSerialize()
@@ -141,6 +168,8 @@ class Usuario implements jsonSerializable
             'nombreUsuario' => $this->getNombreUsuario(),
         ];
     }
+
+
 
 
 

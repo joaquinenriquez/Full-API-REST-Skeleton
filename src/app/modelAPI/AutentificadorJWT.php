@@ -1,9 +1,10 @@
 <?php
-namespace App\Models;
+
 use Firebase\JWT\JWT;
 
 class AutentificadorJWT
 {
+
     private static $claveSecreta = 'ClaveSuperSecreta@';
     private static $tipoEncriptacion = ['HS256'];
     private static $aud = null;
@@ -11,23 +12,22 @@ class AutentificadorJWT
     public static function CrearToken($datos)
     {
         $ahora = time();
-        /*
-         parametros del payload
-         https://tools.ietf.org/html/rfc7519#section-4.1
-         + los que quieras ej="'app'=> "API REST CD 2019" 
-        */
+
         $payload = array(
         	'iat'=>$ahora,
             'exp' => $ahora + (60),
             'aud' => self::Aud(),
             'data' => $datos,
-            'app'=> "API REST CD UTN FRA"
+            'app'=> "COMANDA"
         );
         return JWT::encode($payload, self::$claveSecreta);
     }
     
     public static function VerificarToken($token)
     {
+
+
+        
         if(empty($token))
         {
             throw new Exception("El token esta vacio.");
