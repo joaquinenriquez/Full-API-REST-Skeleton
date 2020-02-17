@@ -7,9 +7,12 @@
 include_once '../entorno.php';
 require_once '../src/app/modelAPI/SectorApi.php';
 require_once '../src/app/modelAPI/ArticuloApi.php';
+require_once '../src/app/modelAPI/UsuarioApi.php';
 require_once '../src/app/modelAPI/MesaApi.php';
 require_once '../src/app/model/CabeceraPedido.php';
 require_once '../src/app/modelAPI/CabeceraPedidoApi.php';
+require_once '../src/app/middleware/UsuarioMiddleware.php';
+require_once '../src/app/middleware/SectorMiddleware.php';
 
 require_once '../src/app/modelAPI/ItemPedidoApi.php';
 
@@ -53,7 +56,18 @@ $app->group('/mesas', function () {
 $app->group('/itempedido', function () {
     $this->get('/{id}', \ItemPedidoApi::class . ':CargarUno' );
     $this->get('', \ItemPedidoApi::class . ':TraerTodosLosPendientes');
+    $this->post('/enpreparacion', \ItemPedidoApi::class . ':CambiarEstadoAEnpreparacion');
+    $this->post('/listoparaservir', \ItemPedidoApi::class . ':CambiarEstadoAListoParaServir');
 });
+
+
+$app->group("/usuarios", function () {
+    $this->post('', \UsuarioApi::class . ':CargarUno')
+    ->add(\SectorMiddleware::class . ':VerificarSiExisteSector')
+    ->add(\UsuarioMiddleware::class . ':VerificarParametrosAltaUsuario');
+
+});
+
 
 
 $app->group('/pruebas', function () {

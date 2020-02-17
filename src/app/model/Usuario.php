@@ -7,11 +7,12 @@ class Usuario implements jsonSerializable
     private $password;
     private $nombre;
     private $apellido;
-    private $rol;
+    private $sector;
     private $estado;
 /* #endregion */
 
 /* #region  Propiedades */
+
     /**
      * Get the value of nombreUsuario
      */ 
@@ -34,7 +35,7 @@ class Usuario implements jsonSerializable
 
     /**
      * Get the value of password
-     */ 
+     */
     public function getPassword()
     {
         return $this->password;
@@ -44,7 +45,7 @@ class Usuario implements jsonSerializable
      * Set the value of password
      *
      * @return  self
-     */ 
+     */
     public function setPassword($password)
     {
         $this->password = $password;
@@ -54,7 +55,7 @@ class Usuario implements jsonSerializable
 
     /**
      * Get the value of nombre
-     */ 
+     */
     public function getNombre()
     {
         return $this->nombre;
@@ -64,7 +65,7 @@ class Usuario implements jsonSerializable
      * Set the value of nombre
      *
      * @return  self
-     */ 
+     */
     public function setNombre($nombre)
     {
         $this->nombre = $nombre;
@@ -74,7 +75,7 @@ class Usuario implements jsonSerializable
 
     /**
      * Get the value of apellido
-     */ 
+     */
     public function getApellido()
     {
         return $this->apellido;
@@ -84,7 +85,7 @@ class Usuario implements jsonSerializable
      * Set the value of apellido
      *
      * @return  self
-     */ 
+     */
     public function setApellido($apellido)
     {
         $this->apellido = $apellido;
@@ -93,28 +94,28 @@ class Usuario implements jsonSerializable
     }
 
     /**
-     * Get the value of rol
-     */ 
-    public function getRol()
+     * Get the value of sector
+     */
+    public function getSector()
     {
-        return $this->rol;
+        return $this->sector;
     }
 
     /**
-     * Set the value of rol
+     * Set the value of sector
      *
      * @return  self
-     */ 
-    public function setRol($rol)
+     */
+    public function setSector($sector)
     {
-        $this->rol = $rol;
+        $this->sector = $sector;
 
         return $this;
     }
 
     /**
      * Get the value of estado
-     */ 
+     */
     public function getEstado()
     {
         return $this->estado;
@@ -124,7 +125,7 @@ class Usuario implements jsonSerializable
      * Set the value of estado
      *
      * @return  self
-     */ 
+     */
     public function setEstado($estado)
     {
         $this->estado = $estado;
@@ -133,14 +134,14 @@ class Usuario implements jsonSerializable
     }
 /* #endregion */
 
-public function jsonSerialize()
-{
-    return 
-    [
-        'nombreUsuario' => $this->getNombreUsuario()
-    ];
-}
+    public function jsonSerialize()
+    {
+        return
+            [
+            'nombreUsuario' => $this->getNombreUsuario(),
+        ];
+    }
+
+
 
 }
-
-?>

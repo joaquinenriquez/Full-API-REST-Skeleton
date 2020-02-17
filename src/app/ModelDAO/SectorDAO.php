@@ -18,7 +18,7 @@ class SectorDAO extends Sector
 
         try {
             // Definimos el texto de  la query
-            $auxQuerySQL = "SELECT idSector, descripcion FROM sectores WHERE estado = 1";
+            $auxQuerySQL = "SELECT id_sector, descripcion FROM sectores WHERE estado = 1";
 
             // Pedimos la instancia de acceso a datos
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
@@ -58,7 +58,7 @@ class SectorDAO extends Sector
         return $auxReturn;
     }
 
-    public static function TraerUno($idSector)
+    public static function TraerUno($id_sector)
     {
         $auxReturn;
         $unSector = new Sector();
@@ -66,27 +66,27 @@ class SectorDAO extends Sector
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT idSector, descripcion FROM sectores WHERE estado = 1 AND idSector = :idSector";
+            $auxQuerySQL = "SELECT id_sector, descripcion FROM sectores WHERE estado = 1 AND id_sector = :id_sector";
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
-            $querySQL->bindValue(':idSector', $idSector, PDO::PARAM_INT);
+            $querySQL->bindValue(':id_sector', $id_sector, PDO::PARAM_INT);
 
             $querySQL->execute();
             $rowSector = $querySQL->fetch();
 
             // Si se encontro uno
             if ($rowSector) {
-                $unSector->setIdSector($rowSector["idSector"]);
+                $unSector->setIdSector($rowSector["id_sector"]);
                 $unSector->setDescripcionSector($rowSector["descripcion"]);
-                $auxReturn = new ResponseJSON(ResponseJSONEstados::OK, $unSector);
+                $auxReturn = new Resultado(false, $unSector, EstadosError::OK);
             } else {
-                $auxReturn = new ResponseJSON(ResponseJSONEstados::SIN_RESULTADOS, "No existe ningun sector con ese id");
+                $auxReturn = new Resultado(false, "No existe ningun sector con ese id", EstadosError::SIN_RESULTADOS);
             }
         } catch (PDOException $unErrorDB) {
-            $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_DB, "Ocurrio un error con la conexion con la base de datos (Sector->TraerUno)" . $unErrorDB->getMessage());
+            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos (Sector->TraerUno)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
         } catch (Exception $unError) {
-            $auxReturn = new ResponseJSON(ResponseJSONEstados::NO_SE_ENCONTRO_RECURSO, "Ocurrio un error al intentar traer el dato (Sector->TraerUno)" . $unError->getMessage());
+            $auxReturn = new Resultado (true, "Ocurrio un error al intentar traer el dato (Sector->TraerUno)" . $unError->getMessage(), EstadosError::ERROR_GENERAL);
         }
 
         return $auxReturn;
@@ -178,6 +178,8 @@ class SectorDAO extends Sector
         return $auxReturn;
 
     }
+
+
 
     /* #endregion */
 }

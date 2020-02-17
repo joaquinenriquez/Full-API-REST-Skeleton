@@ -46,8 +46,7 @@ class ItemPedidoApi
     }
 
     public static function TraerTodosLosPendientes() {
-        return json_encode (ItemPedidoDAO::TraerTodosLosPendientes());
-        $ubicacionParaMensaje = "ItemPedidoApi->TraerPendientes";
+        return json_encode (ItemPedidoDAO::TraerTodosLosPendientes(1));
     }
 
 }

@@ -46,11 +46,13 @@ class ItemPedidoDAO extends ItemPedido
 
     }
 
-    public static function TraerTodosLosPendientes(string $sector)
+    public static function TraerTodosLosPendientes(int $idSector)
     {
         $auxReturn;
         $ubicacionParaMensaje = "ItemPedidoApi->TraerPendientes";
         $pedidosPendientes = [];
+        $filtroPorSector = "AND sectores.id_sector = :id_sector";
+        $querySQL;
 
         $auxQuerySQL = "SELECT id_item_pedido, articulos.descripcion as articulo, itemspedidos.cantidad as cantidad, usuarios.usuario as mozo, sectores.descripcion as sector, itemspedidos.estado FROM itemspedidos
         LEFT JOIN articulos on articulos.id_articulo = itemspedidos.id_articulo
@@ -61,7 +63,14 @@ class ItemPedidoDAO extends ItemPedido
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            
+            // Todos los sectores (para los socios)
+            if ($idSector != 99) {
+                $auxQuerySQL = $auxQuerySQL . " " . $filtroPorSector;
+            }
+
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            $querySQL->bindValue(":id_sector", $idSector);
 
             $statusQuery = $querySQL->execute();
 
