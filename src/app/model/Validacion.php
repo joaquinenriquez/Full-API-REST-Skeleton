@@ -26,7 +26,7 @@ class Validacion
         return $auxReturn;
     }
 
-    public static function SoloLetrasYNumeros(string $texto): bool {
+    public static function SoloLetrasYNumeros($texto): bool {
 
         $auxReturn = false;
 

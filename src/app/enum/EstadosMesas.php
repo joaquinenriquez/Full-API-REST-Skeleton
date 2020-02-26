@@ -9,7 +9,7 @@ class EstadosMesas
     public const CON_CLIENTES_COMIENDO = [4, "CON CLIENTES COMIENDO"];
     public const CON_CLIENTES_PAGANDO = [5, "CON CLIENTES PAGANDO"];
 
-    public static function TraerEstadoPorId($idEstado)
+    public static function TraerEstadoPorId(int $idEstado)
     {
         $auxReturn = false;
         $ARRAY_ESTADOS = [EstadosMesas::DESHABILITADA, EstadosMesas::CERRADA, EstadosMesas::CON_CLIENTES_ELIGIENDO, EstadosMesas::CON_CLIENTES_COMIENDO, EstadosMesas::CON_CLIENTES_ESPERANDO_PEDIDO, EstadosMesas::CON_CLIENTES_PAGANDO];

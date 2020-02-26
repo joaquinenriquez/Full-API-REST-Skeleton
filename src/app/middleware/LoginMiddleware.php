@@ -14,6 +14,8 @@ class LoginMiddleWare
 
         if ($auxReturn->getIsError() == true) {
             $response->getBody()->write(json_encode($auxReturn));
+            $response = $response->withHeader('Content-Type', 'application/json');
+            $response = $response->withStatus($auxReturn->getStatus());
         } else {
             $response = $next($request, $response);
         }
@@ -44,7 +46,7 @@ class LoginMiddleWare
             }
 
             $mensaje = $mensaje . $strParametrosSinDefinir;
-            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_PARAMETROS_SIN_DEFINIR);
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_PARAMETROS_INVALIDOS);
 
         } else {
             $auxReturn = new Resultado(false, "Todos los parametros fueron definidos", EstadosError::OK);

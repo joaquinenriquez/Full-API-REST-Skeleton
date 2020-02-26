@@ -106,22 +106,22 @@ class CabeceraPedidoDAO extends CabeceraPedido
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
 
-            $auxQuerySQL = "INSERT INTO pedidos (idUsuario, nombreCliente, estado, codigoAmigable, idMesa, foto, fechaInicio, fechaFin)
-            VALUES (:idUsuario, :nombreCliente, :estado, :codigoAmigable, :idMesa, :foto, :fechaInicio, :fechaFin)";
+            $auxQuerySQL = "INSERT INTO cabeceraspedidos (id_usuario, nombre_cliente, estado, codigo_amigable, id_mesa, foto, fecha_inicio, fecha_fin)
+            VALUES (:id_usuario, :nombre_cliente, :estado, :codigo_amigable, :id_mesa, :foto, :fecha_inicio, :fecha_fin)";
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
-            $querySQL->bindValue(":idUsuario", $nuevoPedido->getIdUsuario());
-            $querySQL->bindValue(":nombreCliente", $nuevoPedido->getNombreCliente());
+            $querySQL->bindValue(":id_usuario", $nuevoPedido->getIdUsuario());
+            $querySQL->bindValue(":nombre_cliente", $nuevoPedido->getNombreCliente());
             $querySQL->bindValue(":estado", $nuevoPedido->getEstado());
-            $querySQL->bindValue(":codigoAmigable", $nuevoPedido->getCodigoAmigable());
-            $querySQL->bindValue(":idMesa", $nuevoPedido->getIdMesa());
+            $querySQL->bindValue(":codigo_amigable", $nuevoPedido->getCodigoAmigable());
+            $querySQL->bindValue(":id_mesa", $nuevoPedido->getIdMesa());
             $querySQL->bindValue(":foto", $nuevoPedido->getFoto());
-            $querySQL->bindValue(":fechaInicio", $nuevoPedido->getFechaInicio());
-            $querySQL->bindValue(":fechaFin", $nuevoPedido->getFechaFin());
+            $querySQL->bindValue(":fecha_inicio", $nuevoPedido->getFechaInicio());
+            $querySQL->bindValue(":fecha_fin", $nuevoPedido->getFechaFin());
 
             if ($querySQL->execute()) {
-                $auxReturn = new Resultado(false, "Se guardaron los datos correctamente", EstadosError::OK);
+                $auxReturn = new Resultado(false, "Se guardaron los datos correctamente", EstadosError::RECURSO_CREADO);
             } else {
                 $auxReturn = new Resultado(true, "Ocurrio un error al intentar guardar ($ubicacionParaMensaje)", EstadosError::ERROR_GUARDAR);
             }
@@ -203,31 +203,37 @@ class CabeceraPedidoDAO extends CabeceraPedido
 
     public static function TraerPedidoPorMesa($idMesa)
     {
-        $auxReturn = false;
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "CabeceraPedidosDAO->TraerPedidoPorMesa";
         $rows = [];
+        $querySQL;
 
         try
         {
-            $auxReturn = MesaDAO::VerificarEstado($idMesa);
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
 
-            if ($auxReturn->getStatus() == EstadosError::OK) {
-
-                $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-                $auxQuerySQL = "SELECT idPedido FROM pedidos WHERE estado != 0 AND idMesa = :idMesa";
+            if (Validacion::SoloNumeros($idMesa) == true) 
+            {
+                $auxQuerySQL = "SELECT id_pedido FROM cabeceraspedidos WHERE estado != 0 AND id_mesa = :id_mesa LIMIT 1";
                 $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-                $querySQL->bindValue(':idMesa', $idMesa, PDO::PARAM_INT);
-                $estadoQuery = $querySQL->execute();
+                $querySQL->bindValue(':id_mesa', $idMesa, PDO::PARAM_INT);
+            } else 
+            {
+                $auxQuerySQL = "SELECT id_pedido FROM cabeceraspedidos WHERE estado != 0 AND codigoAmigable = :codigoAmigable LIMIT 1";
+                $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+                $querySQL->bindValue(':codigoAmigable', $idMesa, PDO::PARAM_STR);
+            }
 
-                if (!$estadoQuery) {
-                    $auxReturn = new Resultado(true, "Ocurrio un error al intentar ejecutar la consulta. ($ubicacionParaMensaje)", EstadosError::ERROR_QUERY);
-                } else {
+            $estadoQuery = $querySQL->execute();
+
+            if (!$estadoQuery) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar ejecutar la consulta. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            } else {
+                if ($querySQL->rowCount() > 0) {
                     $rows = $querySQL->fetch();
-                    if ($querySQL->rowCount() > 0) {
-                        $auxReturn = new Resultado(false, $rows["idPedido"], EstadosError::OK);
-                    } else {
-                        $auxReturn = new Resultado(false, "La mesa no tiene pedidos en este momento", EstadosError::SIN_RESULTADOS);
-                    }
+                    $auxReturn = new Resultado(false, $rows["id_pedido"], EstadosError::OK);
+                } else {
+                    $auxReturn = new Resultado(false, "La mesa no tiene pedidos en este momento", EstadosError::SIN_RESULTADOS);
                 }
             }
         } catch (PDOException $unErrorDB) {

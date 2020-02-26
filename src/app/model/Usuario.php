@@ -8,7 +8,7 @@ class Usuario implements jsonSerializable
     private $password;
     private $nombre;
     private $apellido;
-    private $sector;
+    private $rol;
     private $estado;
 /* #endregion */
 
@@ -16,7 +16,7 @@ class Usuario implements jsonSerializable
 
     /**
      * Get the value of nombreUsuario
-     */ 
+     */
     public function getNombreUsuario()
     {
         return $this->nombreUsuario;
@@ -26,7 +26,7 @@ class Usuario implements jsonSerializable
      * Set the value of nombreUsuario
      *
      * @return  self
-     */ 
+     */
     public function setNombreUsuario($nombreUsuario)
     {
         $this->nombreUsuario = $nombreUsuario;
@@ -95,21 +95,21 @@ class Usuario implements jsonSerializable
     }
 
     /**
-     * Get the value of sector
+     * Get the value of rol
      */
-    public function getSector()
+    public function getRol()
     {
-        return $this->sector;
+        return $this->rol;
     }
 
     /**
-     * Set the value of sector
+     * Set the value of rol
      *
      * @return  self
      */
-    public function setSector($sector)
+    public function setRol($rol)
     {
-        $this->sector = $sector;
+        $this->rol = $rol;
 
         return $this;
     }
@@ -134,14 +134,15 @@ class Usuario implements jsonSerializable
         return $this;
     }
 
-    public function HashPassword() {
+    public function HashPassword()
+    {
         $passwordHasheada = password_hash($this->getPassword(), PASSWORD_BCRYPT);
         $this->setPassword($passwordHasheada);
     }
 
-        /**
+    /**
      * Get the value of id_usuario
-     */ 
+     */
     public function getIdUsuario()
     {
         return $this->idUsuario;
@@ -151,7 +152,7 @@ class Usuario implements jsonSerializable
      * Set the value of id_usuario
      *
      * @return  self
-     */ 
+     */
     public function setIdUsuario($idUsuario)
     {
         $this->idUsuario = $idUsuario;
@@ -165,12 +166,14 @@ class Usuario implements jsonSerializable
     {
         return
             [
-            'nombreUsuario' => $this->getNombreUsuario(),
+            'id_usuario' => $this->getIdUsuario(),
+            'nombre_usuario' => $this->getNombreUsuario(),
+            'nombre' => $this->getNombre(),
+            'apellido' => $this->getApellido(),
+            'rol' => $this->getRol(),
+            'estado' => $this->getEstado(),
+
         ];
     }
-
-
-
-
 
 }

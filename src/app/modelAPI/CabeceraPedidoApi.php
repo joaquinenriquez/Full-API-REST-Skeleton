@@ -15,6 +15,11 @@ class CabeceraPedidoApi
         echo $auxResponse->getMensaje();
     }
 
+    public static function CargarUno (Request $request, Response $response, $args) 
+    {
+        
+    }
+
 }
 
 

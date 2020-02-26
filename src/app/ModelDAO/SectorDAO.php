@@ -12,13 +12,14 @@ class SectorDAO extends Sector
     /* #region  Métodos */
     public static function TraerTodos()
     {
-        $auxReturn = false;
+        $ubicacionParaMensaje = "Sector->TraerTodos";
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
         $rowsSectores = [];
         $sectores = [];
 
         try {
             // Definimos el texto de  la query
-            $auxQuerySQL = "SELECT id_sector, descripcion FROM sectores WHERE estado = 1";
+            $auxQuerySQL = "SELECT id_sector, descripcion FROM sectores WHERE estado != 0";
 
             // Pedimos la instancia de acceso a datos
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
@@ -28,8 +29,9 @@ class SectorDAO extends Sector
 
             // Como en este caso no necesitamos ingrear valores externos a la consulta ("bindiar..") la ejecutmos directamente
             // Si devuelve false ocurrio un error al ejecutar la query
-            if (!$querySQL->execute()) {
-                $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_GENERAL, "Ocurrio un error al intentar traer todos los sectores (Sector->TraerTodos).");
+            $estadoQuery = $querySQL->execute();
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer todos los sectores ($ubicacionParaMensaje).");
             } else {
                 if ($querySQL->rowCount() > 0) {
                     // Para leer todos los registros que devuelve la consulta
@@ -37,56 +39,59 @@ class SectorDAO extends Sector
                     // Recorremos cada row que nos devolvio la consulta y se lo asignamos a nuestro objeto
                     foreach ($rowsSectores[0] as $unaRowSector) {
                         $unSector = new Sector();
-                        $unSector->setIdSector($unaRowSector["idSector"]);
+                        $unSector->setIdSector($unaRowSector["id_sector"]);
                         $unSector->setDescripcionSector($unaRowSector["descripcion"]);
                         array_push($sectores, $unSector);
                     }
 
-                    $auxReturn = new ResponseJSON(ResponseJSONEstados::OK, $sectores);
+                    $auxReturn = new Resultado(false, $sectores, EstadosError::OK);
 
                 } else {
-                    $auxReturn = new ResponseJSON(ResponseJSONEstados::SIN_RESULTADOS, "No hay sectores creados");
+                    $auxReturn = new Resultado(false, "No hay sectores creados", EstadosError::SIN_RESULTADOS);
                 }
             }
 
         } catch (PDOException $unErrorDB) {
-            $auxReturn = "Ocurrio un error con la conexion con la base de datos (Sector->TraerTodos)" . $unErrorDB->getMessage();
+            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos (Sector->TraerTodos)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
         } catch (Exception $unError) {
-            $auxReturn = "Ocurrio un error al intentar traer los datos (Sector->TraerTodos)" . $unError->getMessage();
+            $auxReturn = new Reusltado(true, "Ocurrio un error al intentar traer los datos (Sector->TraerTodos)" . $unError->getMessage(), EstadosError::ERROR_DB);
         }
 
         return $auxReturn;
     }
 
-    public static function TraerUno($id_sector)
+    public static function TraerUno($idSector)
     {
-        $auxReturn;
+        $ubicacionParaMensaje = "SectorDAO->TraerUno";
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
         $unSector = new Sector();
 
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT id_sector, descripcion FROM sectores WHERE estado = 1 AND id_sector = :id_sector";
+            $auxQuerySQL = "SELECT id_sector, descripcion FROM sectores WHERE estado = 1 AND id_sector = :id_sector LIMIT 1";
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            $querySQL->bindValue(':id_sector', $idSector, PDO::PARAM_INT);
 
-            $querySQL->bindValue(':id_sector', $id_sector, PDO::PARAM_INT);
-
-            $querySQL->execute();
-            $rowSector = $querySQL->fetch();
-
-            // Si se encontro uno
-            if ($rowSector) {
-                $unSector->setIdSector($rowSector["id_sector"]);
-                $unSector->setDescripcionSector($rowSector["descripcion"]);
-                $auxReturn = new Resultado(false, $unSector, EstadosError::OK);
+            $estadoQuery = $querySQL->execute();
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar realizar la consulta ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
             } else {
-                $auxReturn = new Resultado(false, "No existe ningun sector con ese id", EstadosError::SIN_RESULTADOS);
+                if ($querySQL->rowCount() > 0) {
+                    $row = $querySQL->fetch();
+                    $unSector->setIdSector($row["id_sector"]);
+                    $unSector->setDescripcionSector($row["descripcion"]);
+                    $auxReturn = new Resultado(false, $unSector, EstadosError::OK);
+                } else {
+                    $auxReturn = new Resultado(false, "No existe ningun sector con ese id", EstadosError::SIN_RESULTADOS);
+                }
             }
+
         } catch (PDOException $unErrorDB) {
             $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos (Sector->TraerUno)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
         } catch (Exception $unError) {
-            $auxReturn = new Resultado (true, "Ocurrio un error al intentar traer el dato (Sector->TraerUno)" . $unError->getMessage(), EstadosError::ERROR_GENERAL);
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer el dato (Sector->TraerUno)" . $unError->getMessage(), EstadosError::ERROR_DB);
         }
 
         return $auxReturn;
@@ -148,40 +153,79 @@ class SectorDAO extends Sector
         return $auxReturn;
     }
 
-    public static function ModificarUno($idSector, $parametros) 
+    public static function ModificarUno($idSector, $parametros)
     {
-        $auxReturn = false;
+        $ubicacionParaMensaje = "SectorDAO->ModificarUno";
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
 
         try {
+
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "UPDATE sectores SET descripcion = :descripcion WHERE idSector = :idSector AND estado = 1";
+            $auxQuerySQL = "UPDATE sectores SET descripcion = :descripcion WHERE id_sector = :id_sector AND estado = 1";
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
             $querySQL->bindValue(":descripcion", $parametros["descripcion"]);
-            $querySQL->bindValue(":idSector", $idSector);
+            $querySQL->bindValue(":id_sector", $idSector);
 
-            if (!$querySQL->execute()) {
-                $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_GENERAL, "Ocurrio un error al intentar actualizar el sector (Sector->ModificarUno)");
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar realizar la query ($ubicacionParaMensaje).", EstadosError::ERROR_DB);
             } else {
                 if ($querySQL->rowCount() > 0) {
-                    $auxReturn = new ResponseJSON(ResponseJSONEstados::OK, "Se modifico correctamente el sector!");
+                    $auxReturn = new Resultado(false, "Se modifico correctamente el sector!", EstadosError::OK);
                 } else {
-                    $auxReturn = new ResponseJSON(ResponseJSONEstados::SIN_RESULTADOS, "No existe un sector con ese id");
+                    $auxReturn = new Resultado(false, "No se encontro ningun sector con ese ID", EstadosError::SIN_RESULTADOS);
                 }
             }
 
         } catch (PDOException $unErrorDB) {
-            $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_DB, "Ocurrio un error al intentar actualizar el sector (Sector->ModificarUno)");
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar el sector ($ubicacionParaMensaje).", EstadosError::ERROR_DB);
         } catch (Exception $unError) {
-            $auxReturn = new ResponseJSON(ResponseJSONEstados::ERROR_GENERAL, "Ocurrio un error al intentar actualizar el sector (Sector->ModificarUno)");
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar el sector ($ubicacionParaMensaje).", EstadosError::ERROR_DB);
         }
 
         return $auxReturn;
 
     }
 
+    public static function VerificarSiExisteSectorPorDescripcion($descripcionSector)
+    {
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "SectorDAO->VerificarSiExisteSectorPorDescripcion";
+        $rows = [];
 
+        try
+        {
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = "SELECT id_sector FROM sectores WHERE estado != 0 AND descripcion = :descripcion";
+
+            $querySQLPreparada = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            $querySQLPreparada->bindValue(':descripcion', $descripcionSector, PDO::PARAM_STR);
+
+            $estadoQuery = $querySQLPreparada->execute();
+
+            if ($estadoQuery == true) {
+
+                if ($querySQLPreparada->rowCount() > 0) {
+                    $rows = $querySQLPreparada->fetch();
+                    $auxReturn = new Resultado(false, $rows["id_sector"], EstadosError::OK);
+                } else {
+                    $auxReturn = new Resultado(false, "No existe un sector con esa descripcion", EstadosError::SIN_RESULTADOS);
+                }
+            } else {
+                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_GENERAL);
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer el dato ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_DB);
+        }
+
+        return $auxReturn;
+
+    }
 
     /* #endregion */
 }
-
-?>

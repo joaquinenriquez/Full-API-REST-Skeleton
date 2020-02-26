@@ -16,11 +16,13 @@ class LoginApi {
         $nombreUsuario = $parametros["nombre_usuario"];
         $password = $parametros["password"];
 
-        
-
         $auxReturn = UsuarioDAO::Login($nombreUsuario, $password);
-        
-        return json_encode($auxReturn);
+
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
 
     }   
 

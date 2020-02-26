@@ -54,8 +54,8 @@ class Sector implements JsonSerializable
     {
         return
             [
-            'idSector' => $this->getIdSector(),
-            'descripcionSector' => $this->getDescripcionSector(),
+            'id_sector' => $this->getIdSector(),
+            'descripcion' => $this->getDescripcionSector(),
         ];
     }
 }

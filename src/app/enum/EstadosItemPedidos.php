@@ -4,7 +4,7 @@ class EstadosItemPedido
 {
     public const CERRADO = [0, "Cerrado"];
     public const PENDIENTE = [1, "Pendiente"];
-    public const EN_PREPARACION = [2, "En Preparación"];
+    public const EN_PREPARACION = [2, "En Preparacion"];
     public const LISTO_PARA_SERVIR = [3, "Listo para Servir"];
     public const CANCELADO = [4, "Cancelado"];
 

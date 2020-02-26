@@ -27,7 +27,7 @@ class UsuarioMiddleware
                         $auxReturn = new Resultado(false, "Todos los datos son correctos", EstadosError::OK);
 
                     } elseif ($auxReturn->getStatus() == EstadosError::OK) {
-                        $auxReturn = new Resultado(true, "Ya existe un usuario con ese nombre de usuario", EstadosError::ERROR_VALOR_REPETIDO);
+                        $auxReturn = new Resultado(true, "Ya existe un usuario con ese nombre de usuario", EstadosError::ERROR_RECURSO_REPETIDO);
                     }            
                 }
                 
@@ -39,13 +39,20 @@ class UsuarioMiddleware
         }
 
         
+
+
         if ($auxReturn->getIsError() == true) {
+
             $response->getBody()->write(json_encode($auxReturn));
+            $response = $response->withHeader('Content-Type', 'application/json');
+            $response = $response->withStatus($auxReturn->getStatus());
+
         } else {
             $response = $next($request, $response);
         }
 
         return $response;
+
     }
 
     private function VerificarParametrosAltaUsuarioEstanDefinidos($parametros)
@@ -86,7 +93,7 @@ class UsuarioMiddleware
             }
 
             $mensaje = $mensaje . $strParametrosSinDefinir;
-            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_PARAMETROS_SIN_DEFINIR);
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_PARAMETROS_INVALIDOS);
 
         } else {
             $auxReturn = new Resultado(false, "Todos los parametros fueron definidos", EstadosError::OK);
@@ -135,14 +142,14 @@ class UsuarioMiddleware
 
 
         if ($auxReturn == false) {
-            $mensaje = "Existen parametros invalidos: ";
+            $mensaje = "Existen parametros invalidos:";
             $strParametrosConErrores = "";
             foreach ($parametrosConErrores as $unParametro) {
                 $strParametrosConErrores = $strParametrosConErrores . " " . $unParametro;
             }
 
             $mensaje = $mensaje . $strParametrosConErrores;
-            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_PARAMETROS_INVALIDO);
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_PARAMETROS_INVALIDOS);
 
         } else {
             $auxReturn = new Resultado(false, "Todos los parametros fueron definidos", EstadosError::OK);
@@ -153,6 +160,10 @@ class UsuarioMiddleware
 
     private function VerificarSiExisteUsuario(string $nombreUsuario) {
         return UsuarioDAO::VerificarSiExisteUsuario($nombreUsuario);
+    }
+
+    private function Validar() {
+
     }
 
 }
