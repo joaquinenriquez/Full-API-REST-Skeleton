@@ -2,6 +2,7 @@
 
 require_once '../src/app/model/ItemPedido.php';
 require_once '../src/app/ModelDAO/ItemPedidoDAO.php';
+require_once '../src/app/enum/Roles.php';
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -47,7 +48,7 @@ class ItemPedidoApi
                         $auxReturn = ItemPedidoDAO::CargarUno($unItem);
                     }
                 } else if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS) {
-                    $mensaje = "La mesa seleccionada (Nro: " . $mesaSeleccionada->getNumeroMesa() . ") no tiene pedidos abiertos actualmente";
+                    $mensaje = "La mesa seleccionada (Nro: " . $mesaSeleccionada->getNumeroMesa() . ") no tiene pedidos abiertos actualmente. Abra la mesa primero e intente nuevamente.";
                     $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
                 }
             }
@@ -146,7 +147,7 @@ class ItemPedidoApi
 
         $idRol = $request->getHeader("datosUsuario")[0]->id_rol;
         $idUsuario = $request->getHeader("datosUsuario")[0]->id_usuario;
-        
+
         $auxReturn = ItemPedidoDAO::TraerTodosLosPendientes($idRol);
         // Si no tiene resultados modificamos el mensaje
         if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS) {
@@ -173,7 +174,6 @@ class ItemPedidoApi
         $idUsuario = $request->getHeader("datosUsuario")[0]->id_usuario;
         $idRolUsuario = $request->getHeader("datosUsuario")[0]->id_rol;
 
-
         $auxReturn = self::VerificarSector($idItemPedido, $idRolUsuario);
         if ($auxReturn->getStatus() == EstadosError::OK) {
 
@@ -190,6 +190,34 @@ class ItemPedidoApi
         }
 
         $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+
+    }
+
+    public static function FinalizarPreparacionItemPedido(Request $request, Response $response)
+    {
+        $idItemPedido = $request->getAttribute('idItemPedido');
+        $idUsuarioActual = $request->getHeader("datosUsuario")[0]->id_usuario;
+        $idRolUsuarioActual = $request->getHeader("datosUsuario")[0]->id_rol;
+
+        //Nos traemos el itemPedido
+        $auxReturn = ItemPedidoDAO::TraerUno($idItemPedido);
+        if ($auxReturn->getStatus() == EstadosError::OK) {
+            $itemPedidoSeleccionado = $auxReturn->getMensaje();
+
+            // Si el usuario actual es el
+            if ($idRolUsuarioActual == Roles::SOCIO[0] || $itemPedidoSeleccionado->getIdUsuarioAsignado() == $idUsuarioActual) {
+                echo "Es usuario actual o socio";
+            } else 
+            {
+                echo "No ";
+            }
+        }
+
+        //$response->getBody()->write(json_encode($auxReturn));
         $response = $response->withHeader('Content-Type', 'application/json');
         $response = $response->withStatus($auxReturn->getStatus());
 
@@ -222,30 +250,27 @@ class ItemPedidoApi
         $auxReturn = ItemPedidoDAO::TraerUno($idItemPedido);
         $itemPedidoSeleccionado = new ItemPedido();
 
-
         // Formateamos la salida
-        if ($auxReturn->getStatus() == EstadosError::OK)
-        {
+        if ($auxReturn->getStatus() == EstadosError::OK) {
             $itemPedidoSeleccionado = $auxReturn->getMensaje();
             $unItemPedido = new stdClass();
 
-            $unItemPedido->id_Pedido = $itemPedidoSeleccionado->getIdPedido();
-            $unItemPedido->id_Item = $itemPedidoSeleccionado->getIdItemPedido();
+            $unItemPedido->id_pedido = $itemPedidoSeleccionado->getIdPedido();
+            $unItemPedido->id_item = $itemPedidoSeleccionado->getIdItemPedido();
             $unItemPedido->nombre_cliente = $itemPedidoSeleccionado->getNombreCliente();
             $unItemPedido->codigo_amigable = $itemPedidoSeleccionado->getCodigoAmigable();
-            $unItemPedido->hora_Inicio = $itemPedidoSeleccionado->getFechaHoraInicio();
-            $unItemPedido->hora_Fin = $itemPedidoSeleccionado->getFechaHoraFin();
+            $unItemPedido->hora_inicio = replace_null($itemPedidoSeleccionado->getFechaHoraInicio(), '-');
+            $unItemPedido->hora_fin = replace_null($itemPedidoSeleccionado->getFechaHoraFin(), '-');
             $unItemPedido->articulo = $itemPedidoSeleccionado->getDescripcionArticulo();
             $unItemPedido->sector = $itemPedidoSeleccionado->getDescripcionSector();
             $unItemPedido->cantidad = $itemPedidoSeleccionado->getCantidad();
-            $unItemPedido->tiempo_estimado = $itemPedidoSeleccionado->getTiempoEstimado();
+            $unItemPedido->tiempo_estimado = replace_null($itemPedidoSeleccionado->getTiempoEstimado(), '-');
             $unItemPedido->usuario_creador = $itemPedidoSeleccionado->getUsuarioCreador();
-            $unItemPedido->usuario_asignado = $itemPedidoSeleccionado->getUsuarioAsignado();
+            $unItemPedido->usuario_asignado = replace_null($itemPedidoSeleccionado->getUsuarioAsignado(), '-');
             $unItemPedido->estado = EstadosItemPedido::TraerEstadoPorId($itemPedidoSeleccionado->getEstado());
-        
+
             $auxReturn->setMensaje($unItemPedido);
         }
-
 
         $response->getBody()->write(json_encode($auxReturn));
         $response = $response->withHeader('Content-Type', 'application/json');
@@ -253,6 +278,49 @@ class ItemPedidoApi
 
         return $response;
 
+    }
+
+    public static function TraerPedidosTomadosPorUsuario(Request $request, Response $response)
+    {
+
+        $idUsuario = $request->getAttribute('idUsuario');
+        $auxReturn = ItemPedidoDAO::TraerPedidosTomadosPorUsuario($idUsuario);
+
+        // Formateamos la salida
+        if ($auxReturn->getStatus() == EstadosError::OK) 
+        {
+            $listadoItemPedidoFormateado = [];
+
+            $listadoDeItemsPedido = $auxReturn->getMensaje();
+            foreach($listadoDeItemsPedido as $unItemPedido)
+            {
+                $unItemPedidoFormateado = new stdClass();
+                $unItemPedidoFormateado->id_item_pedido = $unItemPedido->getIdItemPedido();
+                $unItemPedidoFormateado->codigo_amigable = $unItemPedido->getCodigoAmigable();
+                $unItemPedidoFormateado->nombre_cliente = $unItemPedido->getNombreCliente();
+                $unItemPedidoFormateado->descripcion_articulo = $unItemPedido->getDescripcionArticulo();
+                $unItemPedidoFormateado->cantidad = $unItemPedido->getCantidad();
+                $unItemPedidoFormateado->descripcion_sector = $unItemPedido->getDescripcionSector();
+                $unItemPedidoFormateado->usuario_creador = $unItemPedido->getUsuarioCreador();
+                $unItemPedidoFormateado->usuario_asignado = replace_null($unItemPedido->getUsuarioAsignado(), '-');
+                $unItemPedidoFormateado->fecha_inicio = replace_null($unItemPedido->getFechaHoraInicio(), '-');
+                $unItemPedidoFormateado->tiempo_estimado = replace_null($unItemPedido->getTiempoEstimado(), '-');
+                $unItemPedidoFormateado->fecha_fin = replace_null($unItemPedido->getFechaHoraFin(), '-');
+                $unItemPedidoFormateado->estado = EstadosItemPedido::TraerEstadoPorId($unItemPedido->getEstado());
+
+                array_push($listadoItemPedidoFormateado, $unItemPedidoFormateado);
+                
+            }
+
+            $auxReturn->setMensaje($listadoItemPedidoFormateado);
+
+        }
+
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
     }
 
     private static function VerificarEstadoMesa($idMesa)
@@ -296,3 +364,40 @@ class ItemPedidoApi
     }
 
 }
+
+// // Verificamos si el usuario asignado es el usuario actual o si el usaurio no es admin
+// if ($itemPedidoSeleccionado->getIdUsuarioAsignado() != $idUsuarioActual
+//     || $idRolUsuarioActual != Roles::SOCIO)
+// {
+//     $auxUsuarioAsignado = UsuarioDAO::TraerUno($itemPedidoSeleccionado->getIdUsuarioAsignado());
+//     if ($auxUsuarioAsignado->getStatus() == EstadosError::OK)
+//     {
+//         $nombreUsuarioAsignado = $auxUsuarioAsignado->getMensaje()->getNombreUsuario();
+//     }
+
+//     $auxUsuarioActual = UsuarioDAO::TraerUno($idUsuarioActual);
+//     if ($auxUsuarioActual->getStatus() == EstadosError::OK)
+//     {
+//         $nombreUsuarioActual = $auxUsuarioActual->getMensaje()->getNombreUsuario();
+//         var_dump($auxUsuarioActual);
+//     }
+
+//     $mensaje = "Solo puede finalizar la preparacion del item el usuario que tomo el pedido ($nombreUsuarioAsignado). Usuario actual: $nombreUsuarioActual";
+//     $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
+
+//     // Verificamos si el pedido se encuentra con estado en 'EN PREPARACION' (2)
+// } else if ($itemPedidoSeleccionado->getEstado() == 2)
+// {
+//     echo "joya";
+
+// }
+// }
+
+//     $auxReturn = ItemPedidoDAO::PrepararItemPedido($idItemPedido, $idUsuario, $tiempoEstimado);
+
+//     } else if ($auxReturn->getStatus() == EstadosError::OK && $auxReturn->getMensaje() != 1) { // Si el item se encontro pero el estado es distinto de 1 (pendiente)
+//         $strEstadoActual = strtoupper(EstadosItemPedido::TraerEstadoPorId($auxReturn->getMensaje()));
+//         $mensaje = "El item del pedido no puede ser tomado dado que su estado es: $strEstadoActual (solo es posible tomar pedidos con estado PENDIENTE)";
+//         $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
+//     }
+// }

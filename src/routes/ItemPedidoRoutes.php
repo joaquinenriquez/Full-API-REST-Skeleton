@@ -3,6 +3,9 @@
 
 $app->group('/itempedido', function () {
 
+
+    $this->get('/tomados/{idUsuario}', \ItemPedidoApi::class . ':TraerPedidosTomadosPorUsuario');
+
     $this->get('/pendientes', \ItemPedidoApi::class . ':TraerTodosLosPendientes');
     $this->get('/pendientesporsector/{idSector}', \ItemPedidoApi::class . ':TraerPendientesPorSector');
     $this->get('/pendientesusuarioactual', \ItemPedidoApi::class . ':TraerPedidosPendientesRolActual');
@@ -18,6 +21,10 @@ $app->group('/itempedido', function () {
         ->add(\ItemPedidoMiddleware::class . ':VerificarParametrosTomarPedido');    
 
     $this->get('/{idItemPedido}', \ItemPedidoApi::class . ':TraerUno');
+
+
+
+    $this->patch('/{idItemPedido}/finalizar', \ItemPedidoApi::class . ':FinalizarPreparacionItemPedido');
 
     //$this->post('/enpreparacion', \ItemPedidoApi::class . ':CambiarEstadoAEnpreparacion');
     //$this->post('/listoparaservir', \ItemPedidoApi::class . ':CambiarEstadoAListoParaServir');

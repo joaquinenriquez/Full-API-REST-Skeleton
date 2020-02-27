@@ -128,7 +128,7 @@ class MesaAPI
 
                     // Si el pedido se creo correctamente entonces informamos el codigo amigale
                     if ($auxReturn->getIsError() == false && $auxReturn->getStatus() == EstadosError::RECURSO_CREADO) {
-                        $mensaje = "La mesa se abrio correctamente. El codigo para la identificacion por el cliente es: " . $nuevoPedido->getCodigoAmigable();
+                        $mensaje = "La mesa se abrio correctamente. El codigo del pedido para la identificacion por el cliente es: " . $nuevoPedido->getCodigoAmigable();
                         $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
                     }
 

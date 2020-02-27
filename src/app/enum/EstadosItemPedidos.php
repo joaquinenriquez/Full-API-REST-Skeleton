@@ -2,11 +2,11 @@
 
 class EstadosItemPedido 
 {
-    public const CERRADO = [0, "Cerrado"];
-    public const PENDIENTE = [1, "Pendiente"];
-    public const EN_PREPARACION = [2, "En Preparacion"];
-    public const LISTO_PARA_SERVIR = [3, "Listo para Servir"];
-    public const CANCELADO = [4, "Cancelado"];
+    public const CERRADO = [0, "CERRADO"];
+    public const PENDIENTE = [1, "PENDIENTE"];
+    public const EN_PREPARACION = [2, "EN PREPARACION"];
+    public const LISTO_PARA_SERVIR = [3, "LISTO PARA SERVIR"];
+    public const CANCELADO = [4, "CANCELADO"];
 
     public static function TraerEstadoPorId($idEstado)
     {
