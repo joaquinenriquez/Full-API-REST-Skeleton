@@ -6,13 +6,12 @@ require_once "../src/app/modelAPI/TokenSeguridad.php";
 require_once "../src/app/enum/EstadosUsuarios.php";
 require_once "../src/app/Querys/QuerysSQL_Usuarios.php";
 
-
 class UsuarioDAO
 {
 
     public static function Login($nombreUsuario, $password)
     {
-        $auxReturn = false;
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "UsuarioDAO->Login";
         $rows = [];
         $unUsuario = new Usuario();
@@ -20,20 +19,41 @@ class UsuarioDAO
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT id_usuario, nombre_usuario, password, nombre, apellido, id_rol, estado FROM usuarios WHERE estado != 0 AND nombre_usuario = :nombre_usuario";
+            $auxQuerySQL = QuerysSQL_Usuarios::Login;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            $querySQL->bindValue(':nombre_usuario', $nombreUsuario, PDO::PARAM_STR);
+            $estadoQuery = $querySQL->execute();
 
-            $querySQLPreparada = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            // Si ocurrio un error al ejecutar la query
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
 
-            $querySQLPreparada->bindValue(':nombre_usuario', $nombreUsuario, PDO::PARAM_STR);
+            } 
+            // Si no se encontro un usuario habilitado con ese nombre de usuario
+            else if ($querySQL->rowCount() <= 0)
+            {
+                $auxReturn = new Resultado(false, "No existe un usuario con ese nombre o se encuentra deshabilitado", EstadosError::ERROR_DE_AUTORIZACION);
 
-            $estadoQuery = $querySQLPreparada->execute();
+            } 
+            // Si la consulta devolvio algun registro verificamos que el usuario se encuentre ACTIVO
+            else 
+            {
+                $rows = $querySQL->fetch();
+                $estadoUsuario = $rows["estado"];
 
-            if ($estadoQuery == true) {
+                // Si se encuentra SUSPENDIDO
+                if ($estadoUsuario  == EstadosUsuarios::SUSPENDIDO[0])
+                {
+                    $mensaje = "El usuario " . $rows["nombre_usuario"] . " se encuentra suspendido";
+                    $auxReturn = new Resultado(false, $mensaje, EstadosError::ERROR_DE_AUTORIZACION);
 
-                if ($querySQLPreparada->rowCount() > 0) {
-                    $rows = $querySQLPreparada->fetch();
+                    // Si no se encuentra ACTIVO
+                } else if ($estadoUsuario != EstadosUsuarios::ACTIVO[0]) {
+                    $auxReturn = new Resultado(false, "El usuario no se encuentra activo", EstadosError::ERROR_DE_AUTORIZACION);
 
-                    if (password_verify($password, $rows["password"])) {
+                } else 
+                {
+                    if (password_verify($password, $rows["password"])) {    
                         $unUsuario->setNombreUsuario($rows["nombre_usuario"]);
                         $unUsuario->setIdUsuario($rows["id_usuario"]);
                         $unUsuario->setNombre($rows["nombre"]);
@@ -49,23 +69,18 @@ class UsuarioDAO
                         $token = TokenSeguridad::CrearUno($datosToken);
 
                         $mensaje = "Login correcto (" . strtoupper(Roles::TraerRolPorId($unUsuario->getRol())) . "). TOKEN:" . $token;
-
                         $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+
                     } else {
                         $auxReturn = new Resultado(false, "Password Incorrecto", EstadosError::ERROR_DE_AUTORIZACION);
                     }
-
-                } else {
-                    $auxReturn = new Resultado(false, "No existe un usuario con ese nombre o se encuentra deshabilitado", EstadosError::ERROR_DE_AUTORIZACION);
                 }
-            } else {
-                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_GENERAL);
             }
 
         } catch (PDOException $unErrorDB) {
             $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
         } catch (Exception $unError) {
-            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer el dato ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_GENERAL);
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer el dato ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_DB);
         }
 
         return $auxReturn;
@@ -97,12 +112,12 @@ class UsuarioDAO
             $querySQLPreparada->bindValue(":password", $nuevo->getPassword());
             $querySQLPreparada->bindValue(":nombre", $nuevo->getNombre());
             $querySQLPreparada->bindValue(":apellido", $nuevo->getApellido());
-            $querySQLPreparada->bindValue(":id_rol", $nuevo->getSector());
+            $querySQLPreparada->bindValue(":id_rol", $nuevo->getRol());
 
             $auxReturn = $querySQLPreparada->execute();
 
             if ($auxReturn == true) {
-                $mensaje = "El usuario se creo correctamente: " . sprintf("%s (Rol: %s)", $nuevo->getNombreUsuario(), strtoupper(Roles::TraerRolPorId($nuevo->getRol())));
+                $mensaje = "El usuario se creo correctamente! " . sprintf("%s (Rol: %s) ID: %s", $nuevo->getNombreUsuario(), strtoupper(Roles::TraerRolPorId($nuevo->getRol())), $objetoAccesoDatos->RetornarUltimoIdInsertado());
                 $auxReturn = new Resultado(false, $mensaje, EstadosError::RECURSO_CREADO);
             } else {
                 $auxReturn = new Resultado(true, "Ocurrio un error al intentar de guardar los datos.($ubicacionParaMensaje)", EstadosError::ERROR_GUARDAR);
@@ -118,33 +133,41 @@ class UsuarioDAO
 
     }
 
-    public static function VerificarSiExisteUsuario($nombreDeUsuario)
+    public static function TraerUsuarioPorNombreDeUsuario($nombreDeUsuario)
     {
-        $auxReturn = false;
-        $ubicacionParaMensaje = "UsuarioDAO->VerificarSiExiste";
-        $rows = [];
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "UsuarioDAO->TraerUsuarioPorNombreDeUsuario";
+        $row = [];
 
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT id_usuario FROM usuarios WHERE estado != 0 AND nombre_usuario = :nombre_usuario";
+            $auxQuerySQL = QuerysSQL_Usuarios::TraerUsuarioPorNombreUsuario;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            $querySQL->bindValue(':nombre_usuario', $nombreDeUsuario, PDO::PARAM_STR);
+            $estadoQuery = $querySQL->execute();
 
-            $querySQLPreparada = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            if ($estadoQuery == false) 
+            {
+                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
 
-            $querySQLPreparada->bindValue(':nombre_usuario', $nombreDeUsuario, PDO::PARAM_STR);
+            } else if ($querySQL->rowCount() <= 0)
+            {
+                $auxReturn = new Resultado(false, "No existe un usuario con nombre $nombreDeUsuario", EstadosError::SIN_RESULTADOS);
 
-            $estadoQuery = $querySQLPreparada->execute();
+            } else 
+            {
+                $row = $querySQL->fetch();
+                $unUsuario = new Usuario();
 
-            if ($estadoQuery == true) {
+                $unUsuario->setIdUsuario($row["id_usuario"]);
+                $unUsuario->setNombreUsuario($row["nombre_usuario"]);
+                $unUsuario->setNombre($row["nombre"]);
+                $unUsuario->setApellido($row["apellido"]);
+                $unUsuario->setRol($row["id_rol"]);
+                $unUsuario->setEstado($row["estado"]);
 
-                if ($querySQLPreparada->rowCount() > 0) {
-                    $rows = $querySQLPreparada->fetch();
-                    $auxReturn = new Resultado(false, "Ya existe un usuario con ese nombre " . $rows["id_usuario"], EstadosError::OK);
-                } else {
-                    $auxReturn = new Resultado(false, "No existe un usuario con ese nombre", EstadosError::SIN_RESULTADOS);
-                }
-            } else {
-                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_GENERAL);
+                $auxReturn = new Resultado(false, $unUsuario, EstadosError::OK);
             }
 
         } catch (PDOException $unErrorDB) {
@@ -154,7 +177,6 @@ class UsuarioDAO
         }
 
         return $auxReturn;
-
     }
 
     public static function TraerUno($idUsuario)
@@ -274,15 +296,12 @@ class UsuarioDAO
             $querySQL->bindValue(":estado", $nuevoEstado);
 
             $estadoQuery = $querySQL->execute();
-            if ($estadoQuery == false)
-            {
+            if ($estadoQuery == false) {
                 $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
 
-            } else if ($querySQL->rowCount() <= 0)
-            {
-                $auxReturn = new Resultado(false, "No existen usuarios con ese ID: " , $idUsuario, EstadosError::SIN_RESULTADOS);
-            } else 
-            {
+            } else if ($querySQL->rowCount() <= 0) {
+                $auxReturn = new Resultado(false, "No existen usuarios con ese ID: ", $idUsuario, EstadosError::SIN_RESULTADOS);
+            } else {
                 $mensaje = "Se actualizo correctamente el estado del usuario a " . EstadosUsuarios::TraerEstadoPorId($nuevoEstado);
                 $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
             }

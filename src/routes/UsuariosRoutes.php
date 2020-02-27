@@ -8,7 +8,6 @@ $app->group("/usuarios", function () {
     $this->patch('/{idUsuario}/suspender', \UsuarioApi::class . ':SuspenderUsuario');
     
     $this->patch('/{idUsuario}/activar', \UsuarioApi::class . ':ActivarUsuario');
-    
 
     $this->get('/{idUsuario}', \UsuarioApi::class . ':TraerUno');
 
@@ -16,7 +15,6 @@ $app->group("/usuarios", function () {
 
     
     $this->post('', \UsuarioApi::class . ':CargarUno')
-    ->add(\SectorMiddleware::class . ':VerificarSiExisteSector')
     ->add(\UsuarioMiddleware::class . ':VerificarParametrosAltaUsuario')
     ->add(\AuthMiddleware::class . ':VerificarSiEsAdmin');
 

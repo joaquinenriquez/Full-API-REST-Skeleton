@@ -11,8 +11,7 @@ class UsuarioMiddleware
 {
     public function VerificarParametrosAltaUsuario(Request $request, Response $response, $next)
     {
-
-        $auxReturn = false;
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
         $parametros = $request->getParsedBody();
         $auxReturn = self::VerificarParametrosAltaUsuarioEstanDefinidos($parametros);
 
@@ -20,7 +19,7 @@ class UsuarioMiddleware
             $auxReturn = self::ValidarTipoDatosParametros($parametros);
 
             if ($auxReturn == true) {
-                $auxReturn = self::VerificarSiExisteUsuario($parametros["nombre_usuario"]);
+                $auxReturn = UsuarioDAO::TraerUsuarioPorNombreDeUsuario($parametros["nombre_usuario"]);
 
                 if ($auxReturn->getIsError() == false) {
                     if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS) {
@@ -28,18 +27,10 @@ class UsuarioMiddleware
 
                     } elseif ($auxReturn->getStatus() == EstadosError::OK) {
                         $auxReturn = new Resultado(true, "Ya existe un usuario con ese nombre de usuario", EstadosError::ERROR_RECURSO_REPETIDO);
-                    }            
+                    }
                 }
-                
-            } else {
-                $response->withStatus(401);
             }
-        } else {
-            $response->withStatus(401);
         }
-
-        
-
 
         if ($auxReturn->getIsError() == true) {
 
@@ -80,13 +71,13 @@ class UsuarioMiddleware
             $auxReturn = false;
         }
 
-        if (empty($parametros["id_sector"])) {
-            array_push($parametrosSinDefinir, "id_sector");
+        if (empty($parametros["id_rol"])) {
+            array_push($parametrosSinDefinir, "id_rol");
             $auxReturn = false;
         }
 
         if ($auxReturn == false) {
-            $mensaje = "Existen parametros sin definir o vacios: ";
+            $mensaje = "Existen parametros sin definir o vacios:";
             $strParametrosSinDefinir = "";
             foreach ($parametrosSinDefinir as $unParametro) {
                 $strParametrosSinDefinir = $strParametrosSinDefinir . " " . $unParametro;
@@ -130,16 +121,15 @@ class UsuarioMiddleware
             }
         }
 
-        if (filter_var($parametros["id_sector"], FILTER_SANITIZE_NUMBER_INT) == false) {
-            array_push($parametrosConErrores, "id_sector (numerico)");
+        if (filter_var($parametros["id_rol"], FILTER_SANITIZE_NUMBER_INT) == false) {
+            array_push($parametrosConErrores, "id_rol (numerico)");
             $auxReturn = false;
         } else {
-            if (Validacion::SoloNumeros($parametros["id_sector"]) == false) {
-                array_push($parametrosConErrores, "id_sector (numerico)");
+            if (Validacion::SoloNumeros($parametros["id_rol"]) == false) {
+                array_push($parametrosConErrores, "id_rol (numerico)");
                 $auxReturn = false;
             }
         }
-
 
         if ($auxReturn == false) {
             $mensaje = "Existen parametros invalidos:";
@@ -156,14 +146,6 @@ class UsuarioMiddleware
         }
 
         return $auxReturn;
-    }
-
-    private function VerificarSiExisteUsuario(string $nombreUsuario) {
-        return UsuarioDAO::VerificarSiExisteUsuario($nombreUsuario);
-    }
-
-    private function Validar() {
-
     }
 
 }

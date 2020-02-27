@@ -12,14 +12,16 @@ class UsuarioApi
 
     public static function CargarUno(Request $request, Response $response, $args)
     {
-
         $ubicacionParaMensaje = "UsuarioApi->CargarUno";
-        $nuevoUsuario = new Usuario();
-
         $parametros = $request->getParsedBody();
+
+        $nombreDeUsuario = $parametros["nombre_usuario"];
+        UsuarioDAO::TraerUsuarioPorNombreDeUsuario($nombreDeUsuario);
+
+        $nuevoUsuario = new Usuario();
         $nuevoUsuario->setNombreUsuario($parametros["nombre_usuario"]);
         $nuevoUsuario->setPassword($parametros["password"]);
-        $nuevoUsuario->setSector($parametros["id_sector"]);
+        $nuevoUsuario->setRol($parametros["id_rol"]);
         $nuevoUsuario->setNombre($parametros["nombre"]);
         $nuevoUsuario->setApellido($parametros["apellido"]);
         $nuevoUsuario->setEstado(1);
@@ -35,16 +37,26 @@ class UsuarioApi
 
     public function TraerUno(Request $request, Response $response, $args)
     {
-        $idUsuario = $request->getAttribute('idUsuario');
-        $auxReturn = UsuarioDAO::TraerUno($idUsuario);
-        $usuarioSeleccionado = new Usuario();
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
 
-        // Formamos la salida
+        $auxIdentificacionUsuario = $request->getAttribute('idUsuario');
+        if (Validacion::SoloNumeros($auxIdentificacionUsuario) == true) {
+            $auxReturn = UsuarioDAO::TraerUno($auxIdentificacionUsuario);
+        } else {
+            $auxReturn = UsuarioDAO::TraerUsuarioPorNombreDeUsuario($auxIdentificacionUsuario);
+        }
+
         if ($auxReturn->getStatus() == EstadosError::OK) {
-            $usuarioSeleccionado = $auxReturn->getMensaje();
-            $usuarioSeleccionado->setRol(Roles::TraerRolPorId($usuarioSeleccionado->getRol()));
-            $usuarioSeleccionado->setEstado(EstadosUsuarios::TraerEstadoPorId($usuarioSeleccionado->getEstado()));
-            $auxReturn = new Resultado(false, $usuarioSeleccionado, EstadosError::OK);
+            ($idUsuario);
+            $usuarioSeleccionado = new Usuario();
+
+            // Formamos la salida
+            if ($auxReturn->getStatus() == EstadosError::OK) {
+                $usuarioSeleccionado = $auxReturn->getMensaje();
+                $usuarioSeleccionado->setRol(Roles::TraerRolPorId($usuarioSeleccionado->getRol()));
+                $usuarioSeleccionado->setEstado(EstadosUsuarios::TraerEstadoPorId($usuarioSeleccionado->getEstado()));
+                $auxReturn = new Resultado(false, $usuarioSeleccionado, EstadosError::OK);
+            }
         }
 
         $response->getBody()->write(json_encode($auxReturn));

@@ -29,7 +29,7 @@ class Usuario implements jsonSerializable
      */
     public function setNombreUsuario($nombreUsuario)
     {
-        $this->nombreUsuario = $nombreUsuario;
+        $this->nombreUsuario = trim($nombreUsuario);
 
         return $this;
     }
@@ -49,7 +49,7 @@ class Usuario implements jsonSerializable
      */
     public function setPassword($password)
     {
-        $this->password = $password;
+        $this->password = trim($password);
 
         return $this;
     }
@@ -69,7 +69,7 @@ class Usuario implements jsonSerializable
      */
     public function setNombre($nombre)
     {
-        $this->nombre = $nombre;
+        $this->nombre = trim($nombre);
 
         return $this;
     }
@@ -89,7 +89,7 @@ class Usuario implements jsonSerializable
      */
     public function setApellido($apellido)
     {
-        $this->apellido = $apellido;
+        $this->apellido = trim($apellido);
 
         return $this;
     }
@@ -109,7 +109,7 @@ class Usuario implements jsonSerializable
      */
     public function setRol($rol)
     {
-        $this->rol = $rol;
+        $this->rol = trim($rol);
 
         return $this;
     }

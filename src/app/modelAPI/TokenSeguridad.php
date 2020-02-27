@@ -37,8 +37,10 @@ class TokenSeguridad
             $auxReturn = new Resultado(true, "El token esta vacio", EstadosError::ERROR_DE_AUTORIZACION);
         } else {
             try{
-
                 $decoded = JWT::decode($token, TokenSeguridad::$keyToken, array('HS256'));
+
+                
+
                 $auxReturn = new Resultado(false, $decoded->data, EstadosError::OK);
             } catch (Exception $unError) 
             {
