@@ -17,19 +17,6 @@ class UsuarioMiddleware
 
         if ($auxReturn->getIsError() == false) {
             $auxReturn = self::ValidarTipoDatosParametros($parametros);
-
-            if ($auxReturn == true) {
-                $auxReturn = UsuarioDAO::TraerUsuarioPorNombreDeUsuario($parametros["nombre_usuario"]);
-
-                if ($auxReturn->getIsError() == false) {
-                    if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS) {
-                        $auxReturn = new Resultado(false, "Todos los datos son correctos", EstadosError::OK);
-
-                    } elseif ($auxReturn->getStatus() == EstadosError::OK) {
-                        $auxReturn = new Resultado(true, "Ya existe un usuario con ese nombre de usuario", EstadosError::ERROR_RECURSO_REPETIDO);
-                    }
-                }
-            }
         }
 
         if ($auxReturn->getIsError() == true) {
@@ -114,11 +101,6 @@ class UsuarioMiddleware
         if (filter_var($parametros["apellido"], FILTER_SANITIZE_STRING) == false) {
             array_push($parametrosConErrores, "apellido (debe contener solo letras)");
             $auxReturn = false;
-        } else {
-            if (Validacion::SoloLetras($parametros["apellido"]) == false) {
-                array_push($parametrosConErrores, "apellido (debe contener solo letras)");
-                $auxReturn = false;
-            }
         }
 
         if (filter_var($parametros["id_rol"], FILTER_SANITIZE_NUMBER_INT) == false) {

@@ -29,7 +29,6 @@ class EstadosItemPedido
         }
 
         return $auxReturn;
-
     }
 
 }

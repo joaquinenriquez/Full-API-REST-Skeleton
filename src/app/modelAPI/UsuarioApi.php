@@ -244,30 +244,43 @@ class UsuarioApi
 
     public static function ModificarUno(Request $request, Response $response, $args)
     {
+        $auxReturn = new Resultado (false, null, EstadosError::OK);
         $ubicacionParaMensaje = "UsuarioApi->ModificarUno";
         $parametros = $request->getParsedBody();
         $idUsuario = $request->getAttribute("idUsuario");
+        $flagMismoUsuario = false;
 
-        // Verificamos que el nombre de usuario no este usado
         $nombreDeUsuario = $parametros["nombre_usuario"];
         $auxReturn = UsuarioDAO::TraerUsuarioPorNombreDeUsuario($nombreDeUsuario);
 
         // Verificamos que si el nombre de usuario ya existe no sea el mismo
-        $usuarioSeleccionado = $auxReturn->getMensaje();
-            
-        if (($usuarioSeleccionado->getIdUsuario() == $idUsuario) || 
-            $auxReturn->getStatus() == EstadosError::SIN_RESULTADOS)
+        if ($auxReturn->getStatus() == EstadosError::OK)
+        {
+            $usuarioSeleccionado = $auxReturn->getMensaje();
+            if ($usuarioSeleccionado->getIdUsuario() == $idUsuario)
             {
-                $usuarioModificado = new Usuario();
-
-                $usuarioModificado->setNombreUsuario($parametros["nombre_usuario"]);
-                $usuarioModificado->setPassword($parametros["password"]);
-                $usuarioModificado->setRol($parametros["id_rol"]);
-                $usuarioModificado->setNombre($parametros["nombre"]);
-                $usuarioModificado->setApellido($parametros["apellido"]);
-
-                $auxReturn = UsuarioDAO::ModificarUno($idUsuario, $usuarioModificado);
+                $flagMismoUsuario = true;
+            } else 
+            {
+                $mensaje = sprintf("Ya existe otro usuario con ese nombre (ID: %s)", $usuarioSeleccionado->getIdUsuario());
+                $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_RECURSO_REPETIDO);
             }
+        }
+            
+        if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS
+        || ($auxReturn->getStatus() == EstadosError::OK && $flagMismoUsuario = true))
+        {
+            $usuarioModificado = new Usuario();
+
+            $usuarioModificado->setNombreUsuario($parametros["nombre_usuario"]);
+            $usuarioModificado->setPassword($parametros["password"]);
+            $usuarioModificado->setRol($parametros["id_rol"]);
+            $usuarioModificado->setNombre($parametros["nombre"]);
+            $usuarioModificado->setApellido($parametros["apellido"]);
+
+            $auxReturn = UsuarioDAO::ModificarUno($idUsuario, $usuarioModificado);
+
+        }
 
         $response->getBody()->write(json_encode($auxReturn));
         $response = $response->withHeader('Content-Type', 'application/json');

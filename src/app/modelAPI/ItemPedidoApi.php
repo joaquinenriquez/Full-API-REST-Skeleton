@@ -108,7 +108,27 @@ class ItemPedidoApi
 
     public static function TraerTodosLosPendientes(Request $request, Response $response)
     {
-        $auxReturn = ItemPedidoDAO::TraerTodosLosPendientes(99);
+        $auxReturn = ItemPedidoDAO::TraerTodosLosPendientes();
+
+        // Tuniamos la salida
+        if ($auxReturn->getStatus() == EstadosError::OK) {
+
+            $listadoPedidosPendientesFormateados = [];
+            $listadoPedidosPendientes = $auxReturn->getMensaje();
+            foreach ($listadoPedidosPendientes as $unItemPedido) {
+
+                $unItemPedidoFormateado = new stdClass();
+                $unItemPedidoFormateado->id_item_pedido = $unItemPedido->getIdItemPedido();
+                $unItemPedidoFormateado->nombre_cliente = $unItemPedido->getNombreCliente();
+                $unItemPedidoFormateado->codigo_amigable = $unItemPedido->getCodigoAmigable();
+                $unItemPedidoFormateado->articulo = $unItemPedido->getDescripcionArticulo();
+                $unItemPedidoFormateado->cantidad = $unItemPedido->getCantidad();
+
+                array_push($listadoPedidosPendientesFormateados, $unItemPedidoFormateado);
+            }
+
+            $auxReturn->setMensaje($listadoPedidosPendientesFormateados);
+        }
 
         $response->getBody()->write(json_encode($auxReturn));
         $response = $response->withHeader('Content-Type', 'application/json');
@@ -211,8 +231,7 @@ class ItemPedidoApi
             // Si el usuario actual es el
             if ($idRolUsuarioActual == Roles::SOCIO[0] || $itemPedidoSeleccionado->getIdUsuarioAsignado() == $idUsuarioActual) {
                 echo "Es usuario actual o socio";
-            } else 
-            {
+            } else {
                 echo "No ";
             }
         }
@@ -287,13 +306,11 @@ class ItemPedidoApi
         $auxReturn = ItemPedidoDAO::TraerPedidosTomadosPorUsuario($idUsuario);
 
         // Formateamos la salida
-        if ($auxReturn->getStatus() == EstadosError::OK) 
-        {
+        if ($auxReturn->getStatus() == EstadosError::OK) {
             $listadoItemPedidoFormateado = [];
 
             $listadoDeItemsPedido = $auxReturn->getMensaje();
-            foreach($listadoDeItemsPedido as $unItemPedido)
-            {
+            foreach ($listadoDeItemsPedido as $unItemPedido) {
                 $unItemPedidoFormateado = new stdClass();
                 $unItemPedidoFormateado->id_item_pedido = $unItemPedido->getIdItemPedido();
                 $unItemPedidoFormateado->codigo_amigable = $unItemPedido->getCodigoAmigable();
@@ -309,7 +326,7 @@ class ItemPedidoApi
                 $unItemPedidoFormateado->estado = EstadosItemPedido::TraerEstadoPorId($unItemPedido->getEstado());
 
                 array_push($listadoItemPedidoFormateado, $unItemPedidoFormateado);
-                
+
             }
 
             $auxReturn->setMensaje($listadoItemPedidoFormateado);

@@ -4,7 +4,10 @@
 $app->group('/itempedido', function () {
 
 
+    
     $this->get('/tomados/{idUsuario}', \ItemPedidoApi::class . ':TraerPedidosTomadosPorUsuario');
+
+
 
     $this->get('/pendientes', \ItemPedidoApi::class . ':TraerTodosLosPendientes');
     $this->get('/pendientesporsector/{idSector}', \ItemPedidoApi::class . ':TraerPendientesPorSector');

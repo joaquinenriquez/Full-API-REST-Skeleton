@@ -2,7 +2,9 @@
 
 $app->group("/usuarios", function () {
 
-    $this->put('/{idUsuario}', \UsuarioApi::class . ':ModificarUno');
+    $this->post('/{idUsuario}/modificar', \UsuarioApi::class . ':ModificarUno')
+        ->add(\UsuarioMiddleware::class . ':VerificarParametrosAltaUsuario')
+        ->add(\AuthMiddleware::class . ':VerificarSiEsAdmin');
 
     $this->get('/actual', \UsuarioApi::class . ':TraerUsuarioActual');
 

@@ -110,7 +110,8 @@ class MesaAPI
 
             // Si la mesa tiene un estado distinta a cerrada
             if ($mesaSeleccionada->getEstado() != 1) {
-                $mensaje = "No se puede abrir la mesa ya que debe estar con estado CERRADA y su estado actual es: " . EstadosMesas::TraerEstadoPorId($mesaSeleccionada->getEstado());
+
+                $mensaje = "La mesa ya se encuentra abierta! El estado actual es: " . EstadosMesas::TraerEstadoPorId($mesaSeleccionada->getEstado());
                 $auxReturn = new Resultado(false, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
 
                 // Si la mesa se encuentra cerrada, la abrimos y creamos la cabecera de un pedido vacio

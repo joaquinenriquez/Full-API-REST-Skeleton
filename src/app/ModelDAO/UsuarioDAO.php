@@ -326,9 +326,40 @@ class UsuarioDAO
     {
         $ubicacionParaMensaje = "UsuarioDAO->ModificarUno";
         $auxReturn = new Resultado(false, null, EstadosError::OK);
-        
-        var_dump($auxReturn);
-        
+
+        try
+        {
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = QuerysSQL_Usuarios::ModificarUno;
+
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            $usuarioModificado->HashPassword();
+
+            $querySQL->bindValue(":id_usuario", $idUsuario);
+            $querySQL->bindValue(":nombre_usuario", $usuarioModificado->getNombreUsuario());
+            $querySQL->bindValue(":password", $usuarioModificado->getPassword());
+            $querySQL->bindValue(":nombre", $usuarioModificado->getNombre());
+            $querySQL->bindValue(":apellido", $usuarioModificado->getApellido());
+            $querySQL->bindValue(":id_rol", $usuarioModificado->getRol());
+   
+            $auxReturn = $querySQL->execute();
+
+            if ($auxReturn == true) {
+                $mensaje = "El usuario se modifico correctamente! " . sprintf("%s (Rol: %s) ID: %s", $usuarioModificado->getNombreUsuario(), strtoupper(Roles::TraerRolPorId($usuarioModificado->getRol())), $idUsuario);
+                $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+            } else {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar de guardar los datos.($ubicacionParaMensaje)", EstadosError::ERROR_GUARDAR);
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)." . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar guardar ($ubicacionParaMensaje)." . $unError->getMessage(), EstadosError::ERROR_GENERAL);
+        }
+
+        return $auxReturn;
+
     }
 
 

@@ -26,7 +26,6 @@ public function __construct()
     $this->setCodigoAmigable(CabeceraPedido::GenerarCodigo());
     $this->fechaInicio = date('d/m/y H:i');
     $this->estado = 1;
-    $this->setIdUsuario(UsuarioDAO::TraerUsuarioActual());
 }
 
 

@@ -1,6 +1,7 @@
 <?php
 
 require_once "../src/app/model/ItemPedido.php";
+require_once "../src/app/model/ItemPedidoRelacionado.php";
 require_once "../src/app/enum/EstadosItemPedidos.php";
 require_once "../src/app/api/Funciones.php";
 require_once "../src/app/Querys/QuerysSQL_Pedidos.php";
@@ -62,9 +63,74 @@ class ItemPedidoDAO extends ItemPedido
 
     }
 
-    public static function TraerTodosLosPendientes($idSector)
+    public static function TraerTodosLosPendientes()
     {
-        $auxReturn;
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "ItemPedidoDAO->TraerTodosLosPendientes";
+        $listadoItemsPedidosPendidos = [];
+
+        try
+        {
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = QuerysSQL_Pedidos::TraerTodosLosItemsPedidosActivos;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer los datos ($ubicacionParaMensaje)", EstadosError::OK);
+            } else {
+                if ($querySQL->rowCount() <= 0) {
+                    $mensaje = "No hay ningun item de pedido pendiente de preparacion.";
+                    $auxReturn = new Resultado(false, $mensaje, EstadosError::SIN_RESULTADOS);
+                } else {
+                    $rows = $querySQL->fetchAll();
+                    foreach ($rows as $unaRow) {
+
+                        $unItemPedido = new ItemPedidoRelacionado();
+
+                        $unItemPedido->setIdItemPedido($unaRow["id_item_pedido"]);
+                        $unItemPedido->setIdPedido($unaRow["id_pedido"]);
+
+                        $unItemPedido->setIdArticulo($unaRow["id_articulo"]);
+                        $unItemPedido->setDescripcionArticulo($unaRow["descripcion_articulo"]);
+                        $unItemPedido->setCantidad($unaRow["cantidad"]);
+                        $unItemPedido->setIdSector($unaRow["id_sector"]);
+                        $unItemPedido->setDescripcionSector($unaRow["descripcion_sector"]);
+
+                        $unItemPedido->setIdUsuarioOwner($unaRow["id_usuario_creador"]);
+                        $unItemPedido->setUsuarioCreador($unaRow["usuario_creador"]);
+                        $unItemPedido->setIdUsuarioAsignado($unaRow["id_usuario_asignado"]);
+                        $unItemPedido->setIdUsuarioAsignado($unaRow["usuario_asignado"]);
+                        $unItemPedido->setFechaHoraInicio($unaRow["fecha_hora_inicio"]);
+                        $unItemPedido->setFechaHoraFin($unaRow["fecha_hora_fin"]);
+                        $unItemPedido->setTiempoEstimado($unaRow["tiempo_estimado"]);
+                        $unItemPedido->setEstado($unaRow["estado"]);
+                        
+                        $unItemPedido->setNombreCliente($unaRow["nombre_cliente"]);
+                        $unItemPedido->setCodigoAmigable($unaRow["codigo_amigable"]);
+                        $unItemPedido->setNroMesa($unaRow["nro_mesa"]);
+                        $unItemPedido->setEstadoMesa($unaRow["estado_mesa"]);
+
+                        array_push($listadoItemsPedidosPendidos, $unItemPedido);
+                    }
+
+                    $auxReturn = new Resultado(false, $listadoItemsPedidosPendidos, EstadosError::OK);
+                }
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)." . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer los datos ($ubicacionParaMensaje)." . $unError->getMessage(), EstadosError::ERROR_DB);
+        }
+
+        return $auxReturn;
+    }
+
+    public static function TraerPedidosPendientesPorSector($idSector)
+    {
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "ItemPedidoDAO->TraerPendientes";
         $pedidosPendientes = [];
         $filtroPorSector = "AND sectores.id_sector = :id_sector";
@@ -168,11 +234,6 @@ class ItemPedidoDAO extends ItemPedido
         }
 
         return $auxReturn;
-    }
-
-    public static function TraerTodos()
-    {
-
     }
 
     public static function VerificarEstado($idItemPedido)
@@ -422,7 +483,7 @@ class ItemPedidoDAO extends ItemPedido
         $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "ItemPedidoDAO->TraerPedidosTomadosPorUsuario";
         $listadoItemsPedidos = [];
-        
+
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
@@ -442,8 +503,7 @@ class ItemPedidoDAO extends ItemPedido
             } else {
                 $rows = $querySQL->fetchAll();
 
-                foreach ($rows as $unaRow) 
-                {
+                foreach ($rows as $unaRow) {
 
                     $unItemPedido = new ItemPedido();
 
