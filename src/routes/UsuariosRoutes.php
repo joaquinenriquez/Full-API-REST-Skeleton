@@ -2,6 +2,7 @@
 
 $app->group("/usuarios", function () {
 
+    $this->put('/{idUsuario}', \UsuarioApi::class . ':ModificarUno');
 
     $this->get('/actual', \UsuarioApi::class . ':TraerUsuarioActual');
 

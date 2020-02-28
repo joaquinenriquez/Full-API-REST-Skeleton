@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 4.7.9
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-02-2020 a las 14:43:32
--- Versión del servidor: 10.1.38-MariaDB
--- Versión de PHP: 7.3.4
+-- Tiempo de generación: 27-02-2020 a las 23:40:40
+-- Versión del servidor: 10.1.31-MariaDB
+-- Versión de PHP: 7.2.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -84,7 +84,7 @@ CREATE TABLE `cabeceraspedidos` (
 --
 
 INSERT INTO `cabeceraspedidos` (`id_pedido`, `id_usuario`, `nombre_cliente`, `estado`, `codigo_amigable`, `id_mesa`, `foto`, `fecha_inicio`, `fecha_fin`) VALUES
-(1, 18, 'dfsfsd', 1, '2KKLO', 1, NULL, '2026-02-20 02:14:00', NULL);
+(1, 19, 'Juan Perez', 1, 'W74NB', 1, NULL, '2026-02-20 12:12:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -157,29 +157,14 @@ CREATE TABLE `itemspedidos` (
 --
 
 INSERT INTO `itemspedidos` (`id_item_pedido`, `id_pedido`, `fecha_inicio`, `fecha_fin`, `id_articulo`, `cantidad`, `tiempo_estimado`, `id_usuario_creador`, `id_usuario_asignado`, `estado`) VALUES
-(1, 1, NULL, NULL, 3, 8, NULL, 18, NULL, 1),
-(2, 1, NULL, NULL, 3, 9, NULL, 18, NULL, 1),
-(3, 1, NULL, NULL, 1, 0, NULL, 18, NULL, 1),
-(4, 1, NULL, NULL, 1, 0, NULL, 18, NULL, 1),
-(5, 1, NULL, NULL, 1, 0, NULL, 18, NULL, 1),
-(6, 1, NULL, NULL, 1, 1, NULL, 18, NULL, 1),
-(7, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 2),
-(8, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 1),
-(9, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 1),
-(10, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 1),
-(11, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 1),
-(12, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 1),
-(13, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 2),
-(14, 1, NULL, NULL, 11, 5, NULL, 18, 17, 2),
-(15, 1, NULL, NULL, 11, 5, NULL, 18, 17, 2),
-(16, 1, NULL, NULL, 11, 5, '00:00:01', 18, 17, 2),
-(17, 1, NULL, NULL, 11, 5, '00:00:10', 18, 17, 2),
-(18, 1, NULL, NULL, 11, 5, '00:01:00', 18, 17, 2),
-(19, 1, NULL, NULL, 11, 5, '00:00:30', 18, 17, 2),
-(20, 1, NULL, NULL, 11, 5, '00:30:00', 18, 17, 2),
-(21, 1, '2026-02-20 05:12:00', NULL, 11, 5, '00:30:00', 18, 17, 2),
-(22, 1, '2026-02-20 05:13:00', NULL, 11, 5, '02:00:00', 18, 17, 2),
-(23, 1, '2026-02-20 05:14:00', NULL, 11, 5, '02:00:00', 18, 17, 2);
+(1, 1, '2026-02-20 14:13:00', NULL, 11, 5, '00:01:00', 18, 17, 3),
+(2, 1, NULL, NULL, 11, 5, NULL, 18, 10, 2),
+(3, 1, NULL, NULL, 11, 5, NULL, 18, 20, 2),
+(4, 1, NULL, NULL, 1, 5, NULL, 18, 20, 2),
+(5, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 1),
+(6, 1, NULL, NULL, 4, 5, NULL, 18, NULL, 1),
+(7, 1, NULL, NULL, 5, 5, NULL, 18, NULL, 1),
+(8, 1, NULL, NULL, 5, 5, NULL, 18, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -198,7 +183,8 @@ CREATE TABLE `mesas` (
 --
 
 INSERT INTO `mesas` (`id_mesa`, `nro_mesa`, `estado`) VALUES
-(1, 1, 2);
+(1, 1, 1),
+(2, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -255,23 +241,18 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `password`, `nombre`, `apellido`, `id_rol`, `estado`) VALUES
-(1, 'ernestor', '', '', '', 1, 1),
-(6, 'ernestor1', 'asd123', 'asda', 'asda', 1, 1),
-(7, 'ernestor3', 'asd123', 'asda', 'asda', 2, 1),
-(8, 'ernestor4', 'asd123', 'asda', 'asda', 1, 1),
-(9, 'ernestor5', '$2y$10$ue5/pdUN5UU88tSE/1ssU.d/0Htk5DF8SPjLuIkh07.D9D7kMcX7i', 'asda', 'asda', 1, 1),
-(10, 'usuario', '$2y$10$J1ujpFcpDqH7oXFSrg3ePOPse6pCtmWiI504OUVxnoXBOwUe.LR6q', 'asda', 'asda', 1, 1),
-(11, 'usuario2', '$2y$10$sdfPTEph1kMGakJ7786cO.MMVxIhBMYrfa6YCDa5X6CiYSgji68UG', 'asda', 'asda', 1, 1),
-(12, 'usuario3', '$2y$10$6XmbDQ/2xXA7jI/gctVdT.8op0MZKhv7l.j7LyvR7CEZxnuIrTW5i', 'asda', 'asda', 1, 1),
-(13, 'usuario4', '$2y$10$dV8vPgj7zDzyTuZFeY.rk.qH9kYOyciINupBveYHePT3lPPGTpIRi', 'asda', 'asda', 1, 1),
-(14, 'usuario5', '$2y$10$mqtUFBHPZ3vMajVUMGW01uDde/pwVUd5tR3SJDRWz4wHSC2bqCOdi', 'asda', 'asda', 1, 1),
-(15, 'usuario6', '$2y$10$eH2gG687xP0Q3RZd7iZI3u1urbyz1cnJxKzFQLcQqlJsMj3kpcfPe', 'asda', 'asda', 1, 1),
-(16, 'usuario7', '$2y$10$hoXZ9Jb7KqCIPNs02EJYt./dj/yBuw7RIQBjr0q3gUXznoN/IRJwu', 'asda', 'asda', 1, 1),
-(17, 'BARTENDER_1', '$2y$10$K1.bGLU2wnKtaMGHxJ3NUuQ1gYTUrJHwYbDDFeVNLHvLuZ8Y9HldO', 'Juan', 'Perez', 2, 1),
-(18, 'COCINERO_1', '$2y$10$BWfAk1vQxmoe3g93LXZG6OLEXhQADNJw58fm3iv.u4i7ZwRmjKW4G', 'Juan', 'Cocinero', 4, 1),
-(19, 'SOCIO_1', '$2y$10$qfxRhnD3CGsrVG/N1tLtgelh.cv8mYwVphZMQhGkZs7H4ilS0mjAS', 'Juan', 'SOCIO', 5, 1),
-(20, 'CERVECERO_1', '$2y$10$C8ZyNMqygZQeouW1DUW9zenKK0bQNKt2MwwnyOQP7uZ1DBU0yiEbq', 'Juan', 'APELLIDO CERVECERO', 3, 1),
-(21, 'CERVECERO_2', '$2y$10$vgul1it5ClLsJ6k4VpScFubbLmLT4CN/yBMOwv/qgC92ShCUy3Ngi', 'Juan', 'APELLIDO CERVECERO', 3, 1);
+(1, 'admin', '$2y$10$c8vhoeyfibgNJZaATBTHRuI8n3L.W2DZKK4R9TBJTvxXXKrizewtG', 'admin del sistema', 'La comanda', 5, 1),
+(2, 'socio1', '$2y$10$C4jlMZ3ZJ49WmvxKzmPuZOa6Gi7Ua3IwB3RtiQmYJzNdMeoYZkG/m', 'El gato', 'Dumas', 5, 1),
+(3, 'socio2', '$2y$10$2tnmlfFXrEArcIixq4rLH.BYiCjXYVgGUKNMIHdZ.EBG5niM7qHk.', 'Paulina', 'Cocina', 5, 1),
+(4, 'socio3', '$2y$10$H4ibZ2PoSlAZNaQldXGfFO1BIRkASX8LEv4z4Pi/ko9Q.IeZvYBKe', 'Dona', 'Petrona', 5, 1),
+(5, 'mozo1', '$2y$10$ddymaXzvsFNA9jSJi6CkUOi8VUps/fgOzS.KLXgpo94l5HVJ4Fj32', 'Karlos', 'Arguinano', 1, 1),
+(6, 'mozo2', '$2y$10$pTH0bAzPmyVfYgEdcQ74/OhN9XpD3tUSLZiN9t5TKYs06ZrHR4iaW', 'Lele', 'Cristobal', 4, 1),
+(7, 'cocinero1', '$2y$10$8Q4ExHPAiOfwwrDdytymkejAIPE/NGmwkU/5NeFb5Vei5ay6wvXda', 'Christophe', 'Krywonis', 1, 1),
+(8, 'cocinera2', '$2y$10$BWzL2TCrE4SI38NBYqqfg.SykfMzK8YIuJ0F9heB8jQJV1MuwA6Ga', 'Narda', 'Lepez', 1, 1),
+(9, 'bartender1', '$2y$10$h2jp1l2UpqEB4NWr0lalj.lvG74WE7pTS6VJG4CqgpS0KEfeAlHwS', 'Donato', 'Disantis', 2, 1),
+(10, 'bartender2', '$2y$10$CHDmxN7LLIaOmrGsfR8KA.qML7GSwHJn9KjN4u4U69Gu2kRTbN6/e', 'Maru', 'Botana', 2, 1),
+(11, 'cervecero1', '$2y$10$p7yY8c3b5BNMS.tBGQ.oCuaPqjOx1OdbxmGUcDRMev4t5w4tZmYam', 'Martiniano', 'Molina', 3, 1),
+(12, 'cervecera2', '$2y$10$TiCDLg1bKcuZMfCacN.eRuZuXxGdWaGo/Ln1QH6Wqu/xC3g1BCl5m', 'Blanca', 'Cotta', 3, 1);
 
 --
 -- Índices para tablas volcadas
@@ -353,13 +334,13 @@ ALTER TABLE `comandas`
 -- AUTO_INCREMENT de la tabla `itemspedidos`
 --
 ALTER TABLE `itemspedidos`
-  MODIFY `id_item_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id_item_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `mesas`
 --
 ALTER TABLE `mesas`
-  MODIFY `id_mesa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_mesa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -377,7 +358,7 @@ ALTER TABLE `sectores`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

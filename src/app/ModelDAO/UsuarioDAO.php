@@ -322,4 +322,19 @@ class UsuarioDAO
 
     }
 
+    public static function ModificarUno($idUsuario, $usuarioModificado)
+    {
+        $ubicacionParaMensaje = "UsuarioDAO->ModificarUno";
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        
+        var_dump($auxReturn);
+        
+    }
+
+
+
+
+
+
+
 }
