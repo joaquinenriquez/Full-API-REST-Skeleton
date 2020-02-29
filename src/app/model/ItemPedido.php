@@ -6,6 +6,7 @@ class ItemPedido implements jsonSerializable
 #region Atributos
 
     private $idItemPedido;
+    private $fechaHoraCreacion;
     private $idPedido;
     private $fechaHoraInicio;
     private $fechaHoraFin;
@@ -22,11 +23,8 @@ class ItemPedido implements jsonSerializable
 
     public function __construct()
     {
-        $this->setFechaHoraFin(null);
-        $this->setFechaHoraFin(null);
-        $this->setIdUsuarioOwner(null);
-        $this->setIdUsuarioAsignado(null);
-        $this->setTiempoEstimado(null);
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+        $this->setFechaHoraCreacion(date('d-m-y H:i'));
         $this->setEstado(1);
     }
 
@@ -40,6 +38,27 @@ class ItemPedido implements jsonSerializable
     {
         return $this->idItemPedido;
     }
+
+        /**
+     * Get the value of fechaCreacion
+     */ 
+    public function getFechaHoraCreacion()
+    {
+        return $this->fechaHoraCreacion;
+    }
+
+    /**
+     * Set the value of fechaCreacion
+     *
+     * @return  self
+     */ 
+    public function setFechaHoraCreacion($fechaHoraCreacion)
+    {
+        $this->fechaHoraCreacion = $fechaHoraCreacion;
+
+        return $this;
+    }
+
 
     /**
      * Set the value of idItemPedido
@@ -242,6 +261,7 @@ class ItemPedido implements jsonSerializable
         return
             [
             'id_item_pedido' => $this->getIdItemPedido(),
+            'fecha_hora_creacion' => $this->getFechaCreacion(),
             'id_pedido' => $this->getIdPedido(),
             'fecha_Hora_Inicio' => $this->getFechaHoraInicio(),
             'fecha_Hora_Fin' => $this->getFechaHoraFin(),
@@ -255,5 +275,7 @@ class ItemPedido implements jsonSerializable
     }
 
 #endregion
+
+
 
 }

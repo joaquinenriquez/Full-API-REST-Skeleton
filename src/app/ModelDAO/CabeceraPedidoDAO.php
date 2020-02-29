@@ -106,8 +106,8 @@ class CabeceraPedidoDAO extends CabeceraPedido
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
 
-            $auxQuerySQL = "INSERT INTO cabeceraspedidos (id_usuario, nombre_cliente, estado, codigo_amigable, id_mesa, foto, fecha_inicio, fecha_fin)
-            VALUES (:id_usuario, :nombre_cliente, :estado, :codigo_amigable, :id_mesa, :foto, :fecha_inicio, :fecha_fin)";
+            $auxQuerySQL = "INSERT INTO cabeceraspedidos (id_usuario, nombre_cliente, estado, codigo_amigable, id_mesa, foto, fecha_inicio_preparacion, fecha_fin_preparacion)
+            VALUES (:id_usuario, :nombre_cliente, :estado, :codigo_amigable, :id_mesa, :foto, :fecha_inicio_preparacion, :fecha_fin_preparacion)";
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
@@ -117,8 +117,8 @@ class CabeceraPedidoDAO extends CabeceraPedido
             $querySQL->bindValue(":codigo_amigable", $nuevoPedido->getCodigoAmigable());
             $querySQL->bindValue(":id_mesa", $nuevoPedido->getIdMesa());
             $querySQL->bindValue(":foto", $nuevoPedido->getFoto());
-            $querySQL->bindValue(":fecha_inicio", $nuevoPedido->getFechaInicio());
-            $querySQL->bindValue(":fecha_fin", $nuevoPedido->getFechaFin());
+            $querySQL->bindValue(":fecha_inicio_preparacion", $nuevoPedido->getFechaInicio());
+            $querySQL->bindValue(":fecha_fin_preparacion", $nuevoPedido->getFechaFin());
 
             if ($querySQL->execute()) {
                 $auxReturn = new Resultado(false, "Se guardaron los datos correctamente", EstadosError::RECURSO_CREADO);

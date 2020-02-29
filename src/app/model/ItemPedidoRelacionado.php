@@ -208,6 +208,7 @@ class ItemPedidoRelacionado extends ItemPedido
         return
             [
             'id_item_pedido' => $this->getIdItemPedido(),
+            'fecha_creacion' => $this->getFechaCreacion(),
             'id_pedido' => $this->getIdPedido(),
             'codigo_amigable' => $this->getCodigoAmigable(),
             'nombre_cliente' => $this->getNombreCliente(),

@@ -75,15 +75,15 @@ CREATE TABLE `cabeceraspedidos` (
   `codigo_amigable` varchar(10) COLLATE utf8_spanish2_ci NOT NULL,
   `id_mesa` int(11) NOT NULL,
   `foto` varchar(255) COLLATE utf8_spanish2_ci DEFAULT NULL,
-  `fecha_inicio` datetime NOT NULL,
-  `fecha_fin` datetime DEFAULT NULL
+  `fecha_inicio_preparacion` datetime NOT NULL,
+  `fecha_fin_preparacion` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
 -- Volcado de datos para la tabla `cabeceraspedidos`
 --
 
-INSERT INTO `cabeceraspedidos` (`id_pedido`, `id_usuario`, `nombre_cliente`, `estado`, `codigo_amigable`, `id_mesa`, `foto`, `fecha_inicio`, `fecha_fin`) VALUES
+INSERT INTO `cabeceraspedidos` (`id_pedido`, `id_usuario`, `nombre_cliente`, `estado`, `codigo_amigable`, `id_mesa`, `foto`, `fecha_inicio_preparacion`, `fecha_fin_preparacion`) VALUES
 (1, 19, 'Juan Perez', 1, 'W74NB', 1, NULL, '2026-02-20 12:12:00', NULL);
 
 -- --------------------------------------------------------
@@ -142,8 +142,8 @@ CREATE TABLE `comandas` (
 CREATE TABLE `itemspedidos` (
   `id_item_pedido` int(11) NOT NULL,
   `id_pedido` int(11) NOT NULL,
-  `fecha_inicio` datetime DEFAULT NULL,
-  `fecha_fin` datetime DEFAULT NULL,
+  `fecha_inicio_preparacion` datetime DEFAULT NULL,
+  `fecha_fin_preparacion` datetime DEFAULT NULL,
   `id_articulo` int(11) NOT NULL,
   `cantidad` int(11) NOT NULL,
   `tiempo_estimado` time DEFAULT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE `itemspedidos` (
 -- Volcado de datos para la tabla `itemspedidos`
 --
 
-INSERT INTO `itemspedidos` (`id_item_pedido`, `id_pedido`, `fecha_inicio`, `fecha_fin`, `id_articulo`, `cantidad`, `tiempo_estimado`, `id_usuario_creador`, `id_usuario_asignado`, `estado`) VALUES
+INSERT INTO `itemspedidos` (`id_item_pedido`, `id_pedido`, `fecha_inicio_preparacion`, `fecha_fin_preparacion`, `id_articulo`, `cantidad`, `tiempo_estimado`, `id_usuario_creador`, `id_usuario_asignado`, `estado`) VALUES
 (1, 1, '2026-02-20 14:13:00', NULL, 11, 5, '00:01:00', 18, 17, 3),
 (2, 1, NULL, NULL, 11, 5, NULL, 18, 10, 2),
 (3, 1, NULL, NULL, 11, 5, NULL, 18, 20, 2),

@@ -2,8 +2,6 @@
 
 
 $app->group('/itempedido', function () {
-
-
     
     $this->get('/tomados/{idUsuario}', \ItemPedidoApi::class . ':TraerPedidosTomadosPorUsuario');
 
@@ -11,6 +9,8 @@ $app->group('/itempedido', function () {
 
     $this->get('/pendientes', \ItemPedidoApi::class . ':TraerTodosLosPendientes');
     $this->get('/pendientesporsector/{idSector}', \ItemPedidoApi::class . ':TraerPendientesPorSector');
+
+    
     $this->get('/pendientesusuarioactual', \ItemPedidoApi::class . ':TraerPedidosPendientesRolActual');
     
     $this->post('/cargaruno/{nroMesa}', \ItemPedidoApi::class . ':CargarUno' )
