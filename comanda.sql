@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.9
+-- version 4.8.5
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-02-2020 a las 23:40:40
--- Versión del servidor: 10.1.31-MariaDB
--- Versión de PHP: 7.2.3
+-- Tiempo de generación: 02-03-2020 a las 14:37:32
+-- Versión del servidor: 10.1.38-MariaDB
+-- Versión de PHP: 7.3.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -75,16 +75,23 @@ CREATE TABLE `cabeceraspedidos` (
   `codigo_amigable` varchar(10) COLLATE utf8_spanish2_ci NOT NULL,
   `id_mesa` int(11) NOT NULL,
   `foto` varchar(255) COLLATE utf8_spanish2_ci DEFAULT NULL,
-  `fecha_inicio_preparacion` datetime NOT NULL,
-  `fecha_fin_preparacion` datetime DEFAULT NULL
+  `fecha_inicio` datetime NOT NULL,
+  `fecha_fin` datetime DEFAULT NULL,
+  `importe` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
 -- Volcado de datos para la tabla `cabeceraspedidos`
 --
 
-INSERT INTO `cabeceraspedidos` (`id_pedido`, `id_usuario`, `nombre_cliente`, `estado`, `codigo_amigable`, `id_mesa`, `foto`, `fecha_inicio_preparacion`, `fecha_fin_preparacion`) VALUES
-(1, 19, 'Juan Perez', 1, 'W74NB', 1, NULL, '2026-02-20 12:12:00', NULL);
+INSERT INTO `cabeceraspedidos` (`id_pedido`, `id_usuario`, `nombre_cliente`, `estado`, `codigo_amigable`, `id_mesa`, `foto`, `fecha_inicio`, `fecha_fin`, `importe`) VALUES
+(1, 3, 'Nombre del cliente asd2', 1, 'HME4C', 3, NULL, '2002-03-20 02:19:00', NULL, '0'),
+(2, 3, 'Nombre del cliente asd2', 1, '820TJ', 3, NULL, '2002-03-20 02:19:00', NULL, '0'),
+(3, 3, 'Nombre del cliente asd2', 1, 'NSN36', 3, NULL, '2002-03-20 02:23:00', NULL, '0'),
+(4, 3, 'Nombre del cliente asd2', 1, 'S6W5F', 3, NULL, '2002-03-20 02:25:00', NULL, '0'),
+(5, 3, 'Nombre del cliente asd2', 1, 'U93EI', 3, NULL, '2002-03-20 02:25:00', NULL, '0'),
+(6, 3, 'Nombre del cliente asd2', 2, 'YFQ06', 3, NULL, '2002-03-20 02:33:00', NULL, '0'),
+(7, 5, 'Nombre del cliente asd2', 2, 'URDIV', 2, NULL, '2002-03-20 03:53:00', NULL, '0');
 
 -- --------------------------------------------------------
 
@@ -142,11 +149,12 @@ CREATE TABLE `comandas` (
 CREATE TABLE `itemspedidos` (
   `id_item_pedido` int(11) NOT NULL,
   `id_pedido` int(11) NOT NULL,
-  `fecha_inicio_preparacion` datetime DEFAULT NULL,
-  `fecha_fin_preparacion` datetime DEFAULT NULL,
+  `fecha_hora_creacion` datetime NOT NULL,
+  `fecha_hora_inicio_preparacion` datetime DEFAULT NULL,
+  `fecha_hora_fin_preparacion` datetime DEFAULT NULL,
   `id_articulo` int(11) NOT NULL,
   `cantidad` int(11) NOT NULL,
-  `tiempo_estimado` time DEFAULT NULL,
+  `tiempo_estimado` int(11) DEFAULT NULL,
   `id_usuario_creador` int(11) NOT NULL,
   `id_usuario_asignado` int(11) DEFAULT NULL,
   `estado` int(11) NOT NULL
@@ -156,15 +164,47 @@ CREATE TABLE `itemspedidos` (
 -- Volcado de datos para la tabla `itemspedidos`
 --
 
-INSERT INTO `itemspedidos` (`id_item_pedido`, `id_pedido`, `fecha_inicio_preparacion`, `fecha_fin_preparacion`, `id_articulo`, `cantidad`, `tiempo_estimado`, `id_usuario_creador`, `id_usuario_asignado`, `estado`) VALUES
-(1, 1, '2026-02-20 14:13:00', NULL, 11, 5, '00:01:00', 18, 17, 3),
-(2, 1, NULL, NULL, 11, 5, NULL, 18, 10, 2),
-(3, 1, NULL, NULL, 11, 5, NULL, 18, 20, 2),
-(4, 1, NULL, NULL, 1, 5, NULL, 18, 20, 2),
-(5, 1, NULL, NULL, 11, 5, NULL, 18, NULL, 1),
-(6, 1, NULL, NULL, 4, 5, NULL, 18, NULL, 1),
-(7, 1, NULL, NULL, 5, 5, NULL, 18, NULL, 1),
-(8, 1, NULL, NULL, 5, 5, NULL, 18, NULL, 1);
+INSERT INTO `itemspedidos` (`id_item_pedido`, `id_pedido`, `fecha_hora_creacion`, `fecha_hora_inicio_preparacion`, `fecha_hora_fin_preparacion`, `id_articulo`, `cantidad`, `tiempo_estimado`, `id_usuario_creador`, `id_usuario_asignado`, `estado`) VALUES
+(1, 5, '2020-03-02 02:25:54', '2020-03-02 02:26:00', '2020-03-02 02:27:00', 9, 1, 100, 3, 3, 4),
+(2, 6, '2020-03-02 02:34:10', '2020-03-02 02:37:00', '2020-03-02 02:37:00', 9, 1, 100, 3, 3, 4),
+(3, 6, '2020-03-02 02:35:49', NULL, NULL, 9, 1, NULL, 3, NULL, 1),
+(4, 6, '2020-03-02 02:54:07', NULL, NULL, 9, 1, NULL, 3, NULL, 1),
+(5, 6, '2020-03-02 03:00:13', NULL, NULL, 9, 1, NULL, 3, NULL, 1),
+(6, 6, '2020-03-02 03:00:15', NULL, NULL, 9, 1, NULL, 3, NULL, 1),
+(7, 6, '2020-03-02 03:00:44', NULL, NULL, 9, 1, NULL, 3, NULL, 1),
+(8, 6, '2020-03-02 03:01:27', NULL, NULL, 9, 1, NULL, 3, NULL, 1),
+(9, 6, '2020-03-02 03:04:56', '2020-03-02 04:22:00', NULL, 9, 1, 10, 3, 5, 2),
+(10, 6, '2020-03-02 03:05:13', '2020-03-02 04:21:00', NULL, 9, 1, 5, 3, 5, 2),
+(11, 7, '2020-03-02 03:54:29', '2020-03-02 05:35:00', NULL, 9, 1, 5, 3, 5, 2),
+(12, 7, '2020-03-02 05:37:47', '2020-03-02 05:38:00', '2020-03-02 05:48:00', 9, 1, 10, 5, 5, 4);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `logs`
+--
+
+CREATE TABLE `logs` (
+  `id_registro` int(11) NOT NULL,
+  `fecha_hora` datetime NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `id_sector` int(11) NOT NULL,
+  `accion` varchar(255) COLLATE utf8_spanish2_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `logs`
+--
+
+INSERT INTO `logs` (`id_registro`, `fecha_hora`, `id_usuario`, `id_sector`, `accion`) VALUES
+(1, '2020-03-02 10:09:37', 5, 4, 'asd'),
+(2, '2020-03-02 10:11:09', 5, 4, 'asd'),
+(3, '2020-03-02 10:15:24', 5, 4, 'asd'),
+(4, '2020-03-02 10:15:57', 5, 4, 'asd'),
+(5, '2020-03-02 10:16:57', 5, 4, 'asd'),
+(6, '2020-03-02 10:20:16', 5, 4, 'asd'),
+(7, '2020-03-02 10:20:52', 5, 4, 'asd'),
+(8, '2020-03-02 10:35:50', 5, 4, 'asd');
 
 -- --------------------------------------------------------
 
@@ -174,7 +214,7 @@ INSERT INTO `itemspedidos` (`id_item_pedido`, `id_pedido`, `fecha_inicio_prepara
 
 CREATE TABLE `mesas` (
   `id_mesa` int(11) NOT NULL,
-  `nro_mesa` int(11) NOT NULL,
+  `codigo_amigable` varchar(255) COLLATE utf8_spanish2_ci NOT NULL,
   `estado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
@@ -182,9 +222,10 @@ CREATE TABLE `mesas` (
 -- Volcado de datos para la tabla `mesas`
 --
 
-INSERT INTO `mesas` (`id_mesa`, `nro_mesa`, `estado`) VALUES
-(1, 1, 1),
-(2, 2, 1);
+INSERT INTO `mesas` (`id_mesa`, `codigo_amigable`, `estado`) VALUES
+(1, 'LMZYU', 1),
+(2, 'X6BXJ', 4),
+(3, 'SP2LN', 5);
 
 -- --------------------------------------------------------
 
@@ -245,7 +286,7 @@ INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `password`, `nombre`, `a
 (2, 'socio1', '$2y$10$C4jlMZ3ZJ49WmvxKzmPuZOa6Gi7Ua3IwB3RtiQmYJzNdMeoYZkG/m', 'El gato', 'Dumas', 5, 1),
 (3, 'socio2', '$2y$10$2tnmlfFXrEArcIixq4rLH.BYiCjXYVgGUKNMIHdZ.EBG5niM7qHk.', 'Paulina', 'Cocina', 5, 1),
 (4, 'socio3', '$2y$10$H4ibZ2PoSlAZNaQldXGfFO1BIRkASX8LEv4z4Pi/ko9Q.IeZvYBKe', 'Dona', 'Petrona', 5, 1),
-(5, 'mozo1', '$2y$10$ddymaXzvsFNA9jSJi6CkUOi8VUps/fgOzS.KLXgpo94l5HVJ4Fj32', 'Karlos', 'Arguinano', 1, 1),
+(5, 'mozo1', '$2y$10$ddymaXzvsFNA9jSJi6CkUOi8VUps/fgOzS.KLXgpo94l5HVJ4Fj32', 'Karlos', 'Arguinano', 4, 1),
 (6, 'mozo2', '$2y$10$pTH0bAzPmyVfYgEdcQ74/OhN9XpD3tUSLZiN9t5TKYs06ZrHR4iaW', 'Lele', 'Cristobal', 4, 1),
 (7, 'cocinero1', '$2y$10$8Q4ExHPAiOfwwrDdytymkejAIPE/NGmwkU/5NeFb5Vei5ay6wvXda', 'Christophe', 'Krywonis', 1, 1),
 (8, 'cocinera2', '$2y$10$BWzL2TCrE4SI38NBYqqfg.SykfMzK8YIuJ0F9heB8jQJV1MuwA6Ga', 'Narda', 'Lepez', 1, 1),
@@ -281,6 +322,12 @@ ALTER TABLE `comandas`
 --
 ALTER TABLE `itemspedidos`
   ADD PRIMARY KEY (`id_item_pedido`);
+
+--
+-- Indices de la tabla `logs`
+--
+ALTER TABLE `logs`
+  ADD PRIMARY KEY (`id_registro`);
 
 --
 -- Indices de la tabla `mesas`
@@ -322,7 +369,7 @@ ALTER TABLE `articulos`
 -- AUTO_INCREMENT de la tabla `cabeceraspedidos`
 --
 ALTER TABLE `cabeceraspedidos`
-  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `comandas`
@@ -334,13 +381,19 @@ ALTER TABLE `comandas`
 -- AUTO_INCREMENT de la tabla `itemspedidos`
 --
 ALTER TABLE `itemspedidos`
-  MODIFY `id_item_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_item_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT de la tabla `logs`
+--
+ALTER TABLE `logs`
+  MODIFY `id_registro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `mesas`
 --
 ALTER TABLE `mesas`
-  MODIFY `id_mesa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_mesa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`

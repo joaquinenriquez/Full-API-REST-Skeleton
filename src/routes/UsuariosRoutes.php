@@ -23,8 +23,7 @@ $app->group("/usuarios", function () {
 
     $this->get('', \UsuarioApi::class . ':TraerTodos');
 
-})->add(LogMiddleWare::class . ':GuardarRegistro')
-->add(\AuthMiddleware::class . ':VerificarToken');
+})->add(\AuthMiddleware::class . ':VerificarToken');
 
 
 ?>

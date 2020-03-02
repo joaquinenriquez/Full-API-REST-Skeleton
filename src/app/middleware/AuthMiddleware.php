@@ -3,7 +3,7 @@
 require_once '../src/app/modelAPI/AutentificadorJWT.php';
 require_once '../src/app/modelAPI/TokenSeguridad.php';
 require_once '../src/app/enum/Roles.php';
-
+require_once '../src/app/Querys/QuerysSQL_Logs.php';
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -26,6 +26,12 @@ class AuthMiddleware
                 $datosUsuario = $auxReturn->getMensaje();
                 $request = $request->withAddedHeader("datosUsuario", $datosUsuario);
                 $response = $next($request, $response);
+
+                $verbo = $request->getAttribute('routeInfo')['request'][0];
+                $ruta =  $request->getAttribute('routeInfo')['request'][1];
+                $accion = $verbo . " " . $ruta;
+            
+                Self::GuardarRegistro($datosUsuario->id_usuario, $datosUsuario->id_rol, "asd");
             }
             
         } else {
@@ -139,6 +145,46 @@ class AuthMiddleware
 
         return $response;
 
+    }
+
+    public static function GuardarRegistro($idUsuario, $idSector, $accion) 
+    {
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "AuthMiddleware->GuardarRegistro";
+
+        try
+        {
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = QuerysSQL_Logs::CargarUna;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            date_default_timezone_set('America/Argentina/Buenos_Aires');
+                        
+            $querySQL->bindValue(":id_usuario", $idUsuario);
+            $querySQL->bindValue(":id_sector", $idSector);
+            $querySQL->bindValue(":accion", $accion);
+            $querySQL->bindValue(":fecha_hora", date('Y-m-d H:i:s'));
+
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar ejecutar la consulta ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            } else if ($querySQL->rowCount() <= 0) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar ejecutar la consulta ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            } else {
+                $mensaje = sprintf("Se guardo correctamente el registro (ID: %s)", $objetoAccesoDatos->RetornarUltimoIdInsertado());
+                $auxReturn = new Resultado(false, $mensaje, EstadosError::RECURSO_CREADO);
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $mensaje = "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)." . $unErrorDB->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $mensaje = "Ocurrio un error al intentar guardar ($ubicacionParaMensaje)." . $unError->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        }
+
+        return $auxReturn;
     }
     
 }
