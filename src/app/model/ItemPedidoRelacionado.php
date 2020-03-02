@@ -8,14 +8,17 @@ class ItemPedidoRelacionado extends ItemPedido
     #region Atributos
 
     private $descripcionArticulo;
+    private $importeArticulo;
     private $usuarioCreador;
     private $usuarioAsignado;
     private $codigoAmigable;
     private $idSector;
     private $descripcionSector;
     private $nombreCliente;
-    private $nroMesa;
+    private $idMesa;
+    private $codigoAmigableMesa;
     private $estadoMesa;
+
 
     #endregion
 
@@ -161,22 +164,22 @@ class ItemPedidoRelacionado extends ItemPedido
         return $this;
     }
 
-    /**
-     * Get the value of nroMesa
-     */
-    public function getNroMesa()
+        /**
+     * Get the value of idMesa
+     */ 
+    public function getIdMesa()
     {
-        return $this->nroMesa;
+        return $this->idMesa;
     }
 
     /**
-     * Set the value of nroMesa
+     * Set the value of idMesa
      *
      * @return  self
-     */
-    public function setNroMesa($nroMesa)
+     */ 
+    public function setIdMesa($idMesa)
     {
-        $this->nroMesa = $nroMesa;
+        $this->idMesa = $idMesa;
 
         return $this;
     }
@@ -201,6 +204,46 @@ class ItemPedidoRelacionado extends ItemPedido
         return $this;
     }
 
+        /**
+     * Get the value of codigoAmigableMesa
+     */ 
+    public function getCodigoAmigableMesa()
+    {
+        return $this->codigoAmigableMesa;
+    }
+
+    /**
+     * Set the value of codigoAmigableMesa
+     *
+     * @return  self
+     */ 
+    public function setCodigoAmigableMesa($codigoAmigableMesa)
+    {
+        $this->codigoAmigableMesa = $codigoAmigableMesa;
+
+        return $this;
+    }
+
+        /**
+     * Get the value of importeArticulo
+     */ 
+    public function getImporteArticulo()
+    {
+        return $this->importeArticulo;
+    }
+
+    /**
+     * Set the value of importeArticulo
+     *
+     * @return  self
+     */ 
+    public function setImporteArticulo($importeArticulo)
+    {
+        $this->importeArticulo = $importeArticulo;
+
+        return $this;
+    }
+
     #endregion
 
     public function jsonSerialize()
@@ -208,9 +251,9 @@ class ItemPedidoRelacionado extends ItemPedido
         return
             [
             'id_item_pedido' => $this->getIdItemPedido(),
-            'fecha_creacion' => $this->getFechaCreacion(),
+            'fecha_hora_creacion' => $this->getFechaHoraCreacion(),
             'id_pedido' => $this->getIdPedido(),
-            'codigo_amigable' => $this->getCodigoAmigable(),
+            'codigo_amigable_pedido' => $this->getCodigoAmigable(),
             'nombre_cliente' => $this->getNombreCliente(),
             'fecha_Hora_Inicio' => $this->getFechaHoraInicio(),
             'fecha_Hora_Fin' => $this->getFechaHoraFin(),
@@ -224,15 +267,17 @@ class ItemPedidoRelacionado extends ItemPedido
             'nombre_usuario_creador' => $this->getUsuarioCreador(),
             'id_usuario_asignado' => $this->getIdUsuarioAsignado(),
             'nombre_usuario_asignado' => $this->getUsuarioAsignado(),
-            'estado' => $this->getEstado(),
-
-            'codigo_amigable' => $this->getCodigoAmigable(),
-            'id_sector' => $this->getIdSector(),
-            'descripcion_sector' => $this->getDescripcionSector(),
-            'nombre_cliente' => $this->getNombreCliente(),
-            'nro_mesa' => $this->getNroMesa(),
+            'estado_item_pedido' => $this->getEstado(),
+            'id_mesa' => $this->getIdMesa(),
+            'codigo_amigable_mesa' => $this->getCodigoAmigableMesa(),
             'estado_mesa' => $this->getEstadoMesa(),
         ];
     }
+
+
+
+
+
+
 
 }

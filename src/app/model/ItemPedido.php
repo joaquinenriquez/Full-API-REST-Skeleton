@@ -23,9 +23,7 @@ class ItemPedido implements jsonSerializable
 
     public function __construct()
     {
-        date_default_timezone_set('America/Argentina/Buenos_Aires');
-        $this->setFechaHoraCreacion(date('d-m-y H:i'));
-        $this->setEstado(1);
+
     }
 
 #endregion
@@ -112,9 +110,9 @@ class ItemPedido implements jsonSerializable
         return $this;
     }
 
-    /**
+       /**
      * Get the value of fechaHoraFin
-     */
+     */ 
     public function getFechaHoraFin()
     {
         return $this->fechaHoraFin;
@@ -124,13 +122,14 @@ class ItemPedido implements jsonSerializable
      * Set the value of fechaHoraFin
      *
      * @return  self
-     */
+     */ 
     public function setFechaHoraFin($fechaHoraFin)
     {
         $this->fechaHoraFin = $fechaHoraFin;
 
         return $this;
     }
+
 
     /**
      * Get the value of idArticulo
@@ -261,7 +260,7 @@ class ItemPedido implements jsonSerializable
         return
             [
             'id_item_pedido' => $this->getIdItemPedido(),
-            'fecha_hora_creacion' => $this->getFechaCreacion(),
+            'fecha_hora_creacion' => $this->getFechaHoraCreacion(),
             'id_pedido' => $this->getIdPedido(),
             'fecha_Hora_Inicio' => $this->getFechaHoraInicio(),
             'fecha_Hora_Fin' => $this->getFechaHoraFin(),
@@ -278,4 +277,6 @@ class ItemPedido implements jsonSerializable
 
 
 
+
+ 
 }

@@ -4,6 +4,8 @@ require_once '../src/app/model/CabeceraPedido.php';
 require_once '../src/app/model/CabeceraPedido.php';
 require_once '../src/app/enum/EstadosError.php';
 require_once '../src/app/model/Resultado.php';
+require_once '../src/app/ModelDAO/CabeceraPedidoDAO.php';
+require_once '../src/app/Querys/QuerysSQL_CabecerasPedidos.php';
 
 class CabeceraPedidoDAO extends CabeceraPedido
 {
@@ -106,8 +108,7 @@ class CabeceraPedidoDAO extends CabeceraPedido
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
 
-            $auxQuerySQL = "INSERT INTO cabeceraspedidos (id_usuario, nombre_cliente, estado, codigo_amigable, id_mesa, foto, fecha_inicio_preparacion, fecha_fin_preparacion)
-            VALUES (:id_usuario, :nombre_cliente, :estado, :codigo_amigable, :id_mesa, :foto, :fecha_inicio_preparacion, :fecha_fin_preparacion)";
+            $auxQuerySQL = QuerysSQL_CabecerasPedidos::CargarUno;
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
@@ -117,8 +118,8 @@ class CabeceraPedidoDAO extends CabeceraPedido
             $querySQL->bindValue(":codigo_amigable", $nuevoPedido->getCodigoAmigable());
             $querySQL->bindValue(":id_mesa", $nuevoPedido->getIdMesa());
             $querySQL->bindValue(":foto", $nuevoPedido->getFoto());
-            $querySQL->bindValue(":fecha_inicio_preparacion", $nuevoPedido->getFechaInicio());
-            $querySQL->bindValue(":fecha_fin_preparacion", $nuevoPedido->getFechaFin());
+            $querySQL->bindValue(":fecha_inicio", $nuevoPedido->getFechaInicio());
+            $querySQL->bindValue(":fecha_fin", $nuevoPedido->getFechaFin());
 
             if ($querySQL->execute()) {
                 $auxReturn = new Resultado(false, "Se guardaron los datos correctamente", EstadosError::RECURSO_CREADO);
@@ -205,37 +206,28 @@ class CabeceraPedidoDAO extends CabeceraPedido
     {
         $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "CabeceraPedidosDAO->TraerPedidoPorMesa";
-        $rows = [];
-        $querySQL;
 
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-
-            if (Validacion::SoloNumeros($idMesa) == true) 
-            {
-                $auxQuerySQL = "SELECT id_pedido FROM cabeceraspedidos WHERE estado != 0 AND id_mesa = :id_mesa LIMIT 1";
-                $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-                $querySQL->bindValue(':id_mesa', $idMesa, PDO::PARAM_INT);
-            } else 
-            {
-                $auxQuerySQL = "SELECT id_pedido FROM cabeceraspedidos WHERE estado != 0 AND codigoAmigable = :codigoAmigable LIMIT 1";
-                $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-                $querySQL->bindValue(':codigoAmigable', $idMesa, PDO::PARAM_STR);
-            }
+            $auxQuerySQL = QuerysSQL_CabecerasPedidos::TraerPedidoPorMesa;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            $querySQL->bindValue(":id_mesa", $idMesa);
 
             $estadoQuery = $querySQL->execute();
 
-            if (!$estadoQuery) {
+            if ($estadoQuery == false) 
+            {
                 $auxReturn = new Resultado(true, "Ocurrio un error al intentar ejecutar la consulta. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
-            } else {
-                if ($querySQL->rowCount() > 0) {
-                    $rows = $querySQL->fetch();
-                    $auxReturn = new Resultado(false, $rows["id_pedido"], EstadosError::OK);
-                } else {
-                    $auxReturn = new Resultado(false, "La mesa no tiene pedidos en este momento", EstadosError::SIN_RESULTADOS);
-                }
+
+            } else if ($querySQL->rowCount() <= 0) {
+                $auxReturn = new Resultado(false, "La mesa ($idMesa) no tiene pedidos en este momento", EstadosError::SIN_RESULTADOS);
+            } else 
+            {
+                $rows = $querySQL->fetch();
+                $auxReturn = new Resultado(false, $rows["id_pedido"], EstadosError::OK);
             }
+
         } catch (PDOException $unErrorDB) {
             $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de de datos. ($ubicacionParaMensaje)." . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
         } catch (Exception $unError) {
@@ -244,6 +236,44 @@ class CabeceraPedidoDAO extends CabeceraPedido
 
         return $auxReturn;
 
+    }
+
+    public static function CambiarEstado($idPedido, $nuevoEstado)
+    {
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "CambeceraPedido->CambiarEstado";
+
+        try {
+
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = QuerysSQL_CabecerasPedidos::ActualizarEstado;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            $querySQL->bindValue(":id_pedido", $idPedido);
+            $querySQL->bindValue(":estado", $nuevoEstado[0]);
+
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+
+            } else if ($querySQL->rowCount() <= 0) 
+            {
+                $auxReturn = new Resultado(true, "No existen una mesa con ese id ($idPedido) o se encuentra deshabilitada", EstadosError::SIN_RESULTADOS);
+
+            } else 
+            {
+                $mensaje = "Se actualizo correctamente el estado! El estado actual es: " . EstadosMesas::TraerEstadoPorId($nuevoEstado[0]);
+                $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unError->getMessage(), EstadosError::ERROR_DB);
+        }
+
+        return $auxReturn;
     }
 
 /* #endregion */

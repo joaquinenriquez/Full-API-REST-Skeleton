@@ -4,7 +4,7 @@ class Mesa implements jsonSerializable
 {
 /* #region  Atributos */
     private $idMesa;
-    private $numeroMesa;
+    private $codigoAmigable;
     private $estado;
 /* #endregion */
 
@@ -30,21 +30,21 @@ class Mesa implements jsonSerializable
     }
 
     /**
-     * Get the value of numeroMesa
+     * Get the value of codigoAmigable
      */
-    public function getNumeroMesa()
+    public function getCodigoAmigable()
     {
-        return $this->numeroMesa;
+        return $this->codigoAmigable;
     }
 
     /**
-     * Set the value of numeroMesa
+     * Set the value of codigoAmigable
      *
      * @return  self
      */
-    public function setNumeroMesa($numeroMesa)
+    public function setCodigoAmigable($codigoAmigable)
     {
-        $this->numeroMesa = $numeroMesa;
+        $this->codigoAmigable = $codigoAmigable;
 
         return $this;
     }
@@ -74,12 +74,10 @@ class Mesa implements jsonSerializable
     {
         return
             [
-            'idMesa' => $this->getIdMesa(),
-            'nroMesa' => $this->getNumeroMesa(),
+            'id_mesa' => $this->getIdMesa(),
+            'codigo_amigable' => $this->getCodigoAmigable(),
             'estado' => $this->getEstado(),
         ];
     }
-
-
 
 }

@@ -3,9 +3,13 @@
 
 $app->group('/itempedido', function () {
     
+    $this->patch('/{idItemPedido}/finalizar', \ItemPedidoApi::class . ':FinalizarPreparacionItemPedido');
+    $this->patch('/{idItemPedido}/servir', \ItemPedidoApi::class . ':ServirItemPedido');
+    $this->patch('/{idItemPedido}/cancelar', \ItemPedidoApi::class . ':CancelarItemPedido');
+
     $this->get('/tomados/{idUsuario}', \ItemPedidoApi::class . ':TraerPedidosTomadosPorUsuario');
-
-
+    $this->get('/tomados', \ItemPedidoApi::class . ':TraerTodosLosPedidosTomados');
+    
 
     $this->get('/pendientes', \ItemPedidoApi::class . ':TraerTodosLosPendientes');
     $this->get('/pendientesporsector/{idSector}', \ItemPedidoApi::class . ':TraerPendientesPorSector');
@@ -13,10 +17,10 @@ $app->group('/itempedido', function () {
     
     $this->get('/pendientesusuarioactual', \ItemPedidoApi::class . ':TraerPedidosPendientesRolActual');
     
-    $this->post('/cargaruno/{nroMesa}', \ItemPedidoApi::class . ':CargarUno' )
+    $this->post('/cargaruno/{identificadorMesa}', \ItemPedidoApi::class . ':CargarUno' )
         ->add(\AuthMiddleware::class . ':VerificarSiPuedeCrearPedidos');
 
-    $this->post('/cargarvarios/{nroMesa}', \ItemPedidoApi::class . ':CargarVarios')
+    $this->post('/cargarvarios/{identificadorMesa}', \ItemPedidoApi::class . ':CargarVarios')
         ->add(\ItemPedidoMiddleware::class . ':VerificarParametrosAltaVariosItemPedido')
         ->add(\AuthMiddleware::class . ':VerificarSiPuedeCrearPedidos');
 
@@ -27,7 +31,7 @@ $app->group('/itempedido', function () {
 
 
 
-    $this->patch('/{idItemPedido}/finalizar', \ItemPedidoApi::class . ':FinalizarPreparacionItemPedido');
+
 
     //$this->post('/enpreparacion', \ItemPedidoApi::class . ':CambiarEstadoAEnpreparacion');
     //$this->post('/listoparaservir', \ItemPedidoApi::class . ':CambiarEstadoAListoParaServir');

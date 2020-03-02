@@ -10,11 +10,11 @@ class ItemPedidoMiddleware
 
     public function VerificarParametrosAltaItemPedido(Request $request, Response $response, $next)
     {
-
+        $ubicacionParaMensaje = "ItemPedidoMiddleware->VerificarParametrosAltaItemPedido";
         $auxReturn = false;
         $parametros = $request->getParsedBody();
         $auxReturn = self::VerificarParametrosAltaItemPedidoEstanDefinidos($parametros);
-        $nroMesa = $request->getAttribute('routeInfo')[2]['nroMesa'];
+        $nroMesa = $request->getAttribute('routeInfo')[2]['identificadorMesa'];
 
         // Validamos que se encuentre definido el nroMesa
         if (isset($nroMesa) == false) {
@@ -181,7 +181,7 @@ class ItemPedidoMiddleware
     public function VerificarParametrosAltaVariosItemPedido(Request $request, Response $response, $next)
     {
         $parametros = $request->getParsedBody();
-        $nroMesa = $request->getAttribute('routeInfo')[2]['nroMesa'];
+        $nroMesa = $request->getAttribute('routeInfo')[2]['identificadorMesa'];
         $auxReturn = new Resultado(false, null, null);
 
         // Verificamos los datos de la mesa
@@ -225,6 +225,7 @@ class ItemPedidoMiddleware
 
     private function VerificarDatosMesa($nroMesa)
     {
+        $ubicacionParaMensaje = "ItemPedidoMidlleware->VerificarDatosMesa";
         $auxReturn = new Resultado(false, null, null);
         // Validamos que se encuentre definido el id
         if (isset($nroMesa) == false) {

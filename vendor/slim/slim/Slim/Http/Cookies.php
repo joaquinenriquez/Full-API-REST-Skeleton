@@ -135,7 +135,7 @@ class Cookies implements CookiesInterface
                 $timestamp = (int)$properties['expires'];
             }
             if ($timestamp !== 0) {
-                $result .= '; expires=' . gmdate('D, d-M-Y H:i:s e', $timestamp);
+                $result .= '; expires=' . gmdate('D, Y-m-d H:i:s:s e', $timestamp);
             }
         }
 

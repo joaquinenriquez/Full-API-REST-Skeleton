@@ -1,0 +1,6 @@
+Estados Mesas:
+	Con Clientes Eligiendo-> Al abrirla
+	Con Clientes Esperando Pedido-> Al Pedir el Primero
+	Con Cliente comiendo -> al Entregar el primero
+	Con clientes pagando-> En cualquier momento (?)
+	Cerrada -> Con todos los items del pedido finalizados

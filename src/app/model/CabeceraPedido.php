@@ -1,10 +1,12 @@
 <?php
 
 require_once '../src/app/modelDAO/UsuarioDAO.php';
+require_once '../src/app/api/Funciones.php';
 
 class CabeceraPedido
 {
-/* #region  Atributos */
+
+#region  Atributos
 
     private $idPedido;
     private $idUsuario;
@@ -17,19 +19,18 @@ class CabeceraPedido
     private $fechaFin;
 
     
-/* #endregion */
+#endregion
+
+#region constructores
 
 public function __construct()
 {
-    date_default_timezone_set('America/Argentina/Buenos_Aires');
 
-    $this->setCodigoAmigable(CabeceraPedido::GenerarCodigo());
-    $this->fechaInicio = date('d/m/y H:i');
-    $this->estado = 1;
 }
 
+#endregion 
 
-/* #region  Propiedades */
+#region  Propiedades
 
     /**
      * Get the value of idUsuario
@@ -173,33 +174,6 @@ public function __construct()
     }
 
     
-
-
-/* #endregion */
-
-public static function GenerarCodigo() {
-    
-    $caracteres = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    $cantidadCaracteres = strlen($caracteres) - 1; 
-
-    // Buscamos un numero aleatorio de entre 0 y la cantidad de caracteres
-    // Ese numero lo utilizamos como comienzo del substring de largo 1
-    $caracter1 = substr($caracteres, rand(0, $cantidadCaracteres), 1);
-    $caracter2 = substr($caracteres, rand(0, $cantidadCaracteres), 1);
-    $caracter3 = substr($caracteres, rand(0, $cantidadCaracteres), 1);
-    $caracter4 = substr($caracteres, rand(0, $cantidadCaracteres), 1);
-    $caracter5 = substr($caracteres, rand(0, $cantidadCaracteres), 1);
-
-    $codigo = $caracter1 . $caracter2 . $caracter3 . $caracter4 . $caracter5;
-
-    return $codigo;
-
-}
-
-
-
-
-
     /**
      * Get the value of fechaInicio
      */ 
@@ -260,5 +234,8 @@ public static function GenerarCodigo() {
         return $this;
     }
 
+
+
+#endregion
 
 }

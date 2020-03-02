@@ -5,6 +5,8 @@ require_once '../src/app/modelDAO/UsuarioDAO.php';
 require_once '../src/app/api/responseJSON.php';
 require_once '../src/app/enum/EstadosMesas.php';
 require_once '../src/app/modelDAO/CabeceraPedidoDAO.php';
+require_once '../src/app/Querys/QuerysSQL_Mesas.php';
+require_once '../src/app/api/Funciones.php';
 
 class MesaDAO extends Mesa
 {
@@ -12,13 +14,12 @@ class MesaDAO extends Mesa
     public static function TraerTodos()
     {
         $auxReturn = false;
-        $rows = [];
-        $mesas = [];
         $ubicacionParaMensaje = "Mesas->TraerTodos";
+        $listadoMesas = [];
 
         try {
             // Definimos el texto de  la query
-            $auxQuerySQL = "SELECT id_mesa, nro_mesa, estado FROM mesas WHERE estado != 0";
+            $auxQuerySQL = QuerysSQL_Mesas::TraerTodas;
 
             // Pedimos la instancia de acceso a datos
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
@@ -31,26 +32,24 @@ class MesaDAO extends Mesa
             $estadoQuery = $querySQL->execute();
             if ($estadoQuery == false) {
                 $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer los datos. ($ubicacionParaMensaje).", EstadosError::ERROR_DB);
+
+            } else if ($querySQL->rowCount() <= 0) {
+                $auxReturn = new Resultado(false, "No hay mesas creadas", EstadosError::SIN_RESULTADOS);
             } else {
-                if ($querySQL->rowCount() > 0) {
-                    // Para leer todos los registros que devuelve la consulta
-                    $rows[] = ($querySQL->fetchAll());
-                    // Recorremos cada row que nos devolvio la consulta y se lo asignamos a nuestro objeto
-                    foreach ($rows[0] as $unaRow) {
-                        $unaMesa = new stdClass();
-                        $unaMesa->nro_mesa = $unaRow["nro_mesa"];
+                // Para leer todos los registros que devuelve la consulta
+                $rows[] = ($querySQL->fetchAll());
+                foreach ($rows[0] as $unaRow) {
+                    $unaMesa = new Mesa();
 
-                        $estadoMesa = EstadosMesas::TraerEstadoPorId($unaRow["estado"]);
-                        $unaMesa->estado = $estadoMesa;
+                    $unaMesa->setIdMesa($unaRow["id_mesa"]);
+                    $unaMesa->setCodigoAmigable($unaRow["codigo_amigable"]);
+                    $unaMesa->setEstado($unaRow["estado"]);
 
-                        array_push($mesas, $unaMesa);
-                    }
-
-                    $auxReturn = new Resultado(false, $mesas, EstadosError::OK);
-
-                } else {
-                    $auxReturn = new Resultado(false, "No hay mesas creadas", EstadosError::SIN_RESULTADOS);
+                    array_push($listadoMesas, $unaMesa);
                 }
+
+                $auxReturn = new Resultado(false, $listadoMesas, EstadosError::OK);
+
             }
 
         } catch (PDOException $unErrorDB) {
@@ -66,42 +65,42 @@ class MesaDAO extends Mesa
         return $auxReturn;
     }
 
-    public static function TraerUno($nroMesa)
+    public static function TraerUno($identificadorMesa)
     {
         $auxReturn = new Resultado(false, null, EstadosError::OK);
-        $ubicacionParaMensaje = "Mesa->TraerUno";
+        $ubicacionParaMensaje = "Mesa->TraerUnoPorId";
+
+        if (Validacion::SoloNumeros($identificadorMesa) == true )
+        {
+            $auxQuerySQL = QuerysSQL_Mesas::TraerUnaPorId;
+        } 
+        else 
+        {
+            $auxQuerySQL = QuerysSQL_Mesas::TraerUnaPorCodigoAmigable;
+        }
 
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT id_mesa, nro_mesa, estado FROM mesas WHERE estado != 0 AND nro_mesa = :nro_mesa LIMIT 1";
-
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-
-            $querySQL->bindValue(':nro_mesa', $nroMesa, PDO::PARAM_INT);
+            $querySQL->bindValue(':identificador_mesa', $identificadorMesa, PDO::PARAM_INT);
 
             $estadoQuery = $querySQL->execute();
 
-            if ($estadoQuery == false) 
-            {
+            if ($estadoQuery == false) {
                 $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la consulta. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
-            } else 
-            {
-                if ($querySQL->rowCount() > 0) 
-                {
-                    $row = $querySQL->fetch();
-                    $unaMesa = new Mesa();
 
-                    $unaMesa->setIdMesa($row["id_mesa"]);
-                    $unaMesa->setNumeroMesa($row["nro_mesa"]);
-                    $unaMesa->setEstado($row["estado"]);
+            } else if ($querySQL->rowCount() <= 0) {
+                $auxReturn = new Resultado(false, "No existe ninguna mesa con esa identificacion ($identificadorMesa)", EstadosError::SIN_RESULTADOS);
+            } else {
+                $row = $querySQL->fetch();
+                $unaMesa = new Mesa();
 
-                    $auxReturn = new Resultado(false, $unaMesa, EstadosError::OK);
-                } else 
-                {
-                    $auxReturn = new Resultado(false, "No existe ninguna mesa con ese numero", EstadosError::SIN_RESULTADOS);
-                }
-                
+                $unaMesa->setIdMesa($row["id_mesa"]);
+                $unaMesa->setCodigoAmigable($row["codigo_amigable"]);
+                $unaMesa->setEstado($row["estado"]);
+
+                $auxReturn = new Resultado(false, $unaMesa, EstadosError::OK);
             }
 
         } catch (PDOException $unErrorDB) {
@@ -115,7 +114,7 @@ class MesaDAO extends Mesa
         return $auxReturn;
     }
 
-    public static function CargarUno($parametros)
+    public static function CargarUno()
     {
 
         $auxReturn = new Resultado(false, null, EstadosError::OK);
@@ -124,17 +123,22 @@ class MesaDAO extends Mesa
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "INSERT INTO mesas (nro_mesa, estado) VALUES (:nro_mesa, 1)";
+            $auxQuerySQL = QuerysSQL_Mesas::CargarUna;
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
-            $querySQL->bindValue(":nro_mesa", $parametros["nro_mesa"]);
+            $codigoAmigable = GenerarCodigoAmigable();
+            $querySQL->bindValue(":codigo_amigable", $codigoAmigable);
+            $querySQL->bindValue(":estado", EstadosMesas::CERRADA[0]);
 
             $estadoQuery = $querySQL->execute();
 
             if ($estadoQuery == false) {
                 $auxReturn = new Resultado(true, "Ocurrio un error al intentar ejecutar la consulta ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            } else if ($querySQL->rowCount() <= 0) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar ejecutar la consulta ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
             } else {
-                $auxReturn = new Resultado(false, "Se creo correctamente la mesa!", EstadosError::RECURSO_CREADO);
+                $mensaje = sprintf("Se creo correctamente la mesa! El codigo amigable es: %s (ID: %s)", $codigoAmigable, $objetoAccesoDatos->RetornarUltimoIdInsertado());
+                $auxReturn = new Resultado(false, $mensaje, EstadosError::RECURSO_CREADO);
             }
 
         } catch (PDOException $unErrorDB) {
@@ -181,112 +185,43 @@ class MesaDAO extends Mesa
 
     }
 
-    public static function VerificarEstado($idMesa)
-    {
-        $auxReturn = new Resultado(false, null, EstadosError::OK);
-        $ubicacionParaMensaje = "MesaDAO->VerificarEstado";
-        $rows = [];
-
-        try
-        {
-            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT estado FROM mesas WHERE estado != 0 AND id_mesa = :id_mesa";
-            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-            $querySQL->bindValue(':id_mesa', $idMesa, PDO::PARAM_INT);
-
-            $estadoQuery = $querySQL->execute();
-
-            if ($estadoQuery == true) {
-
-                if ($querySQL->rowCount() > 0) {
-                    $rows = $querySQL->fetch();
-                    $auxReturn = new Resultado(false, $rows["estado"], EstadosError::OK);
-                } else {
-                    $auxReturn = new Resultado(false, "La mesa no existe o se encuentra deshabilitada", EstadosError::SIN_RESULTADOS);
-                }
-            } else {
-                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
-            }
-
-        } catch (PDOException $unErrorDB) {
-            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
-        } catch (Exception $unError) {
-            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer el dato ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_DB);
-        }
-
-        return $auxReturn;
-
-    }
-
-    public static function VerificarEstadoPorNroMesa($nroMesa)
-    {
-        $auxReturn = new Resultado(false, null, EstadosError::OK);
-        $ubicacionParaMensaje = "MesaDAO->VerificarEstado";
-        $rows = [];
-
-        try
-        {
-            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT estado FROM mesas WHERE estado != 0 AND nro_mesa = :nro_mesa";
-            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-            $querySQL->bindValue(':nro_mesa', $nroMesa, PDO::PARAM_INT);
-
-            $estadoQuery = $querySQL->execute();
-
-            if ($estadoQuery == true) {
-
-                if ($querySQL->rowCount() > 0) {
-                    $rows = $querySQL->fetch();
-                    $auxReturn = new Resultado(false, $rows["estado"], EstadosError::OK);
-                } else {
-                    $auxReturn = new Resultado(false, "La mesa no existe o se encuentra deshabilitada", EstadosError::SIN_RESULTADOS);
-                }
-            } else {
-                $auxReturn = new Resultado(true, "Ocurrio un error al ejecutar la query. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
-            }
-
-        } catch (PDOException $unErrorDB) {
-            $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
-        } catch (Exception $unError) {
-            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer el dato ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_DB);
-        }
-
-        return $auxReturn;
-
-    }
-
-    public static function CambiarEstado($nroMesa, $estado)
+    public static function CambiarEstado($idMesa, $nuevoEstado)
     {
         $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "MesaDAO->CambiarEstado";
 
         try {
+
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "UPDATE mesas SET estado = :estado WHERE nro_mesa = :nro_mesa AND estado != 0";
+            $auxQuerySQL = QuerysSQL_Mesas::ActualizarEstado;
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
-            $querySQL->bindValue(":nro_mesa", $nroMesa);
-            $querySQL->bindValue(":estado", $estado[0]);
+            $querySQL->bindValue(":id_mesa", $idMesa);
+            $querySQL->bindValue(":estado", $nuevoEstado[0]);
 
-            if (!$querySQL->execute()) {
-                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_GENERAL);
-            } else {
-                if ($querySQL->rowCount() > 0) {
-                    $auxReturn = new Resultado(false, "Se actualizo correctamente el estado!", EstadosError::OK);
-                } else {
-                    $auxReturn = new Resultados(true, "No existen datos con ese id", EstadosError::SIN_RESULTADOS);
-                }
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+
+            } else if ($querySQL->rowCount() <= 0) 
+            {
+                $auxReturn = new Resultado(true, "No existen una mesa con ese id ($idMesa) o se encuentra deshabilitada", EstadosError::SIN_RESULTADOS);
+
+            } else 
+            {
+                $mensaje = "Se actualizo correctamente el estado! El estado actual es: " . EstadosMesas::TraerEstadoPorId($nuevoEstado[0]);
+                $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
             }
 
         } catch (PDOException $unErrorDB) {
-            $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
         } catch (Exception $unError) {
-            $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje)", EstadosError::ERROR_GENERAL);
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unError->getMessage(), EstadosError::ERROR_DB);
         }
 
         return $auxReturn;
     }
-
 
 
 /* #endregion */

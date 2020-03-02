@@ -19,14 +19,15 @@ class ItemPedidoDAO extends ItemPedido
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
 
-            $auxQuerySQL = "INSERT INTO `itemspedidos` (id_pedido, `fecha_inicio_preparacion`, `fecha_fin_preparacion`, `id_articulo`, `cantidad`, `tiempo_estimado`, `id_usuario_creador`, `id_usuario_asignado`, `estado`) VALUES
-             (:id_pedido, :fecha_inicio_preparacion, :fecha_fin_preparacion, :id_articulo, :cantidad, :tiempo_estimado, :id_usuario_creador, :id_usuario_asignado, :estado)";
+            $auxQuerySQL = "INSERT INTO `itemspedidos` (id_pedido, fecha_hora_creacion, `fecha_hora_inicio_preparacion`, `fecha_hora_fin_preparacion`, `id_articulo`, `cantidad`, `tiempo_estimado`, `id_usuario_creador`, `id_usuario_asignado`, `estado`) VALUES
+             (:id_pedido, :fecha_hora_creacion, :fecha_hora_inicio_preparacion, :fecha_hora_fin_preparacion, :id_articulo, :cantidad, :tiempo_estimado, :id_usuario_creador, :id_usuario_asignado, :estado)";
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
             $querySQL->bindValue(":id_pedido", $nuevoPedido->getIdPedido());
-            $querySQL->bindValue(":fecha_inicio_preparacion", $nuevoPedido->getFechaHoraInicio());
-            $querySQL->bindValue(":fecha_fin_preparacion", $nuevoPedido->getFechaHoraFin());
+            $querySQL->bindValue(":fecha_hora_creacion", $nuevoPedido->getFechaHoraCreacion());
+            $querySQL->bindValue(":fecha_hora_inicio_preparacion", $nuevoPedido->getFechaHoraInicio());
+            $querySQL->bindValue(":fecha_hora_fin_preparacion", $nuevoPedido->getFechaHoraFin());
             $querySQL->bindValue(":id_articulo", $nuevoPedido->getIdArticulo());
             $querySQL->bindValue(":cantidad", $nuevoPedido->getCantidad());
             $querySQL->bindValue(":tiempo_estimado", $nuevoPedido->getTiempoEstimado());
@@ -63,8 +64,7 @@ class ItemPedidoDAO extends ItemPedido
 
     }
 
-
-    public static function TraerPedidos($estadoItemPedido, $sectorDelArticulo, $usuarioAsignado)
+    public static function TraerPedidos($estadoItemPedido, $sectorDelArticulo, $idMesa, $usuarioAsignado)
     {
         $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "ItemPedidoDAO->TraerTodosLosPendientes";
@@ -77,15 +77,15 @@ class ItemPedidoDAO extends ItemPedido
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
             // Si nos piden por usuario asignado, como originalmente es null tenemos que hacer esta desprolijidad
-            if ($usuarioAsignado != null)
-            {
-                $auxQuerySQL = $auxQuerySQL .  " AND itemspedidos.id_usuario_asignado = IFNULL(:id_usuario_asignado, itemspedidos.id_usuario_asignado)";
+            if ($usuarioAsignado != null) {
+                $auxQuerySQL = $auxQuerySQL . " AND itemspedidos.id_usuario_asignado = IFNULL(:id_usuario_asignado, itemspedidos.id_usuario_asignado)";
                 $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
                 $querySQL->bindValue(":id_usuario_asignado", $usuarioAsignado);
-           }
+            }
 
-           $querySQL->bindValue(":estado", $estadoItemPedido);
-           $querySQL->bindValue(":id_sector", $sectorDelArticulo);
+            $querySQL->bindValue(":estado", $estadoItemPedido);
+            $querySQL->bindValue(":id_sector", $sectorDelArticulo);
+            $querySQL->bindValue(":id_mesa", $idMesa);
 
             $estadoQuery = $querySQL->execute();
 
@@ -103,25 +103,28 @@ class ItemPedidoDAO extends ItemPedido
 
                         $unItemPedido->setIdItemPedido($unaRow["id_item_pedido"]);
                         $unItemPedido->setIdPedido($unaRow["id_pedido"]);
+                        $unItemPedido->setFechaHoraCreacion($unaRow["fecha_hora_creacion"]);
 
                         $unItemPedido->setIdArticulo($unaRow["id_articulo"]);
                         $unItemPedido->setDescripcionArticulo($unaRow["descripcion_articulo"]);
                         $unItemPedido->setCantidad($unaRow["cantidad"]);
+                        $unItemPedido->setImporteArticulo($unaRow["importe"]);
                         $unItemPedido->setIdSector($unaRow["id_sector"]);
                         $unItemPedido->setDescripcionSector($unaRow["descripcion_sector"]);
 
                         $unItemPedido->setIdUsuarioOwner($unaRow["id_usuario_creador"]);
                         $unItemPedido->setUsuarioCreador($unaRow["usuario_creador"]);
                         $unItemPedido->setIdUsuarioAsignado($unaRow["id_usuario_asignado"]);
-                        $unItemPedido->setIdUsuarioAsignado($unaRow["usuario_asignado"]);
+                        $unItemPedido->setUsuarioAsignado($unaRow["usuario_asignado"]);
                         $unItemPedido->setFechaHoraInicio($unaRow["fecha_hora_inicio"]);
                         $unItemPedido->setFechaHoraFin($unaRow["fecha_hora_fin"]);
                         $unItemPedido->setTiempoEstimado($unaRow["tiempo_estimado"]);
                         $unItemPedido->setEstado($unaRow["estado"]);
-                        
+
                         $unItemPedido->setNombreCliente($unaRow["nombre_cliente"]);
+                        $unItemPedido->setIdMesa($unaRow["id_mesa"]);
                         $unItemPedido->setCodigoAmigable($unaRow["codigo_amigable"]);
-                        $unItemPedido->setNroMesa($unaRow["nro_mesa"]);
+                        $unItemPedido->setCodigoAmigableMesa($unaRow["codigo_amigable_mesa"]);
                         $unItemPedido->setEstadoMesa($unaRow["estado_mesa"]);
 
                         array_push($listadoItemsPedidosPendidos, $unItemPedido);
@@ -148,33 +151,146 @@ class ItemPedidoDAO extends ItemPedido
 
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $tiempoEstimado = (self::ConvertirIntAMinutos($tiempoEstimado));
-        $fechaInicio = date('d/m/y H:i');
+        $fechaHoraInicio = date('Y/m/d H:i');
 
         try {
 
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "UPDATE itemsPedidos SET
-                                    estado = 2,
-                                    tiempo_estimado = :tiempo_estimado,
-                                    id_usuario_asignado = :id_usuario_asignado,
-                                    fecha_inicio_preparacion = :fecha_inicio_preparacion
-                            WHERE id_item_pedido = :id_item_pedido AND estado = 1";
+            $auxQuerySQL = QuerysSQL_Pedidos::TomarItemPedido;
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
             $querySQL->bindValue(":id_item_pedido", $idItemPedido);
             $querySQL->bindValue(":tiempo_estimado", $tiempoEstimado);
             $querySQL->bindValue(":id_usuario_asignado", $idUsuarioActual);
-            $querySQL->bindValue(":fecha_inicio_preparacion", $fechaInicio);
+            $querySQL->bindValue(":fecha_hora_inicio_preparacion", $fechaHoraInicio);
 
-            if (!$querySQL->execute()) {
-                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_GENERAL);
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
             } else {
                 if ($querySQL->rowCount() > 0) {
                     $mensaje = "Se actualizo correctamente! El estado actual es: " . strtoupper(EstadosItemPedido::TraerEstadoPorId(2));
                     $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
                 } else {
-                    $auxReturn = new Resultados(true, "No existen datos con ese id", EstadosError::SIN_RESULTADOS);
+                    $auxReturn = new Resultado(true, "No existen datos con ese id con estado PENDIENTE", EstadosError::SIN_RESULTADOS);
+                }
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $mensaje = "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unErrorDB->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $mensaje = "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unError->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        }
+
+        return $auxReturn;
+    }
+
+    public static function FinalizarPreparacionItemPedido($idItemPedido)
+    {
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "ItemPedidoDAO->FinalizarPreparacionItemPedido";
+
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+        $fechaHoraFin = date('Y/m/d H:i');
+
+        try {
+
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = QuerysSQL_Pedidos::FinalizarPreparacionItemPedido;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            $querySQL->bindValue(":id_item_pedido", $idItemPedido);
+            $querySQL->bindValue(":fecha_hora_fin_preparacion", $fechaHoraFin);
+
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            } else {
+                if ($querySQL->rowCount() > 0) {
+                    $mensaje = "Se actualizo correctamente! El estado actual es: " . strtoupper(EstadosItemPedido::TraerEstadoPorId(3));
+                    $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+                } else {
+                    $auxReturn = new Resultado(true, "No existen datos con ese id de item de pedido", EstadosError::SIN_RESULTADOS);
+                }
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $mensaje = "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unErrorDB->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $mensaje = "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unError->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        }
+
+        return $auxReturn;
+    }
+
+    public static function CancelarItemPedido($idItemPedido)
+    {
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "ItemPedidoDAO->CancelarItemPedido";
+
+        try {
+
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = QuerysSQL_Pedidos::CancelarItemPedido;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            
+            $querySQL->bindValue(":id_item_pedido", $idItemPedido);
+    
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) 
+            {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            } else if ($querySQL->rowCount() <= 0) 
+            {
+                $auxReturn = new Resultado(true, "No existen datos con ese id de item de pedido", EstadosError::SIN_RESULTADOS);
+            } else 
+            {   
+                $mensaje = "Se actualizo correctamente! El estado actual es: " . strtoupper(EstadosItemPedido::TraerEstadoPorId(10));
+                $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $mensaje = "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unErrorDB->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $mensaje = "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unError->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        }
+
+        return $auxReturn;
+    }
+
+    public static function ServirItemPedido($idItemPedido)
+    {
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "ItemPedidoDAO->ServirItemPedido";
+
+        try {
+
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = QuerysSQL_Pedidos::ServirItemPedido;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+
+            $querySQL->bindValue(":id_item_pedido", $idItemPedido);
+
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            } else {
+                if ($querySQL->rowCount() > 0) {
+                    $mensaje = "Se actualizo correctamente! El estado actual es: " . strtoupper(EstadosItemPedido::TraerEstadoPorId(4));
+                    $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+                } else {
+                    $auxReturn = new Resultado(true, "No existen datos con ese id de item de pedido", EstadosError::SIN_RESULTADOS);
                 }
             }
 
@@ -234,41 +350,12 @@ class ItemPedidoDAO extends ItemPedido
 
         $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "ItemPedidoDAO->TraerUno";
-        $rows = [];
 
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT
-            itemspedidos.id_item_pedido,
-            ItemsPedidos.id_pedido as id_pedido,
-            cabeceraspedidos.codigo_amigable as codigo_amigable,
-            cabeceraspedidos.nombre_cliente as nombre_cliente,
-            ItemsPedidos.id_pedido as id_pedido,
-            ItemsPedidos.fecha_inicio_preparacion as fecha_inicio_preparacion,
-            ItemsPedidos.fecha_fin_preparacion as fecha_fin_preparacion,
-            itemspedidos.id_articulo as id_articulo,
-            articulos.descripcion as descripcion_articulo,
-            articulos.id_sector as id_sector,
-            sectores.descripcion as descripcion_sector,
-            cantidad,
-            tiempo_estimado,
-            id_usuario_creador,
-            usuarios_creadores.nombre_usuario as usuario_creador,
-            id_usuario_asignado,
-            usuarios_asignados.nombre_usuario as usuario_asignado,
-            itemspedidos.estado as estado
-
-            FROM ItemsPedidos
-            LEFT JOIN articulos on articulos.id_articulo = itemspedidos.id_articulo
-            LEFT JOIN usuarios as usuarios_asignados on usuarios_asignados.id_usuario = itemspedidos.id_usuario_asignado
-            LEFT JOIN usuarios as usuarios_creadores on usuarios_creadores.id_usuario = itemspedidos.id_usuario_creador
-            LEFT JOIN cabeceraspedidos on cabeceraspedidos.id_pedido = itemspedidos.id_pedido
-            LEFT JOIN sectores on sectores.id_sector = articulos.id_sector
-            WHERE itemspedidos.estado != 0 AND id_item_pedido = :id_item_pedido";
-
+            $auxQuerySQL = QuerysSQL_Pedidos::TraerUno;
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
-
             $querySQL->bindValue(':id_item_pedido', $idItemPedido, PDO::PARAM_INT);
 
             $estadoQuery = $querySQL->execute();
@@ -276,26 +363,36 @@ class ItemPedidoDAO extends ItemPedido
             if ($estadoQuery == true) {
 
                 if ($querySQL->rowCount() > 0) {
-                    $rows = $querySQL->fetch();
-                    $unItemPedido = new ItemPedido();
+                    $unaRow = $querySQL->fetch();
+                    $unItemPedido = new ItemPedidoRelacionado();
 
-                    $unItemPedido->setIdItemPedido($rows["id_item_pedido"]);
-                    $unItemPedido->setIdPedido($rows["id_pedido"]);
-                    $unItemPedido->setCodigoAmigable($rows["codigo_amigable"]);
-                    $unItemPedido->setFechaHoraInicio($rows["fecha_inicio_preparacion"]);
-                    $unItemPedido->setFechaHoraFin($rows["fecha_fin_preparacion"]);
-                    $unItemPedido->setIdArticulo($rows["id_articulo"]);
-                    $unItemPedido->setCantidad($rows["cantidad"]);
-                    $unItemPedido->setTiempoEstimado($rows["tiempo_estimado"]);
-                    $unItemPedido->setIdUsuarioOwner($rows["id_usuario_creador"]);
-                    $unItemPedido->setIdUsuarioAsignado($rows["id_usuario_asignado"]);
-                    $unItemPedido->setEstado($rows["estado"]);
+                    $unItemPedido = new ItemPedidoRelacionado();
 
-                    $unItemPedido->setDescripcionArticulo($rows["descripcion_articulo"]);
-                    $unItemPedido->setUsuarioAsignado($rows["usuario_asignado"]);
-                    $unItemPedido->setUsuarioCreador($rows["usuario_creador"]);
-                    $unItemPedido->setDescripcionSector($rows["descripcion_sector"]);
-                    $unItemPedido->setNombreCliente($rows["nombre_cliente"]);
+                    $unItemPedido->setIdItemPedido($unaRow["id_item_pedido"]);
+                    $unItemPedido->setIdPedido($unaRow["id_pedido"]);
+                    $unItemPedido->setFechaHoraCreacion($unaRow["fecha_hora_creacion"]);
+
+                    $unItemPedido->setIdArticulo($unaRow["id_articulo"]);
+                    $unItemPedido->setDescripcionArticulo($unaRow["descripcion_articulo"]);
+                    $unItemPedido->setCantidad($unaRow["cantidad"]);
+                    $unItemPedido->setImporteArticulo($unaRow["importe"]);
+                    $unItemPedido->setIdSector($unaRow["id_sector"]);
+                    $unItemPedido->setDescripcionSector($unaRow["descripcion_sector"]);
+
+                    $unItemPedido->setIdUsuarioOwner($unaRow["id_usuario_creador"]);
+                    $unItemPedido->setUsuarioCreador($unaRow["usuario_creador"]);
+                    $unItemPedido->setIdUsuarioAsignado($unaRow["id_usuario_asignado"]);
+                    $unItemPedido->setUsuarioAsignado($unaRow["usuario_asignado"]);
+                    $unItemPedido->setFechaHoraInicio($unaRow["fecha_hora_inicio"]);
+                    $unItemPedido->setFechaHoraFin($unaRow["fecha_hora_fin"]);
+                    $unItemPedido->setTiempoEstimado($unaRow["tiempo_estimado"]);
+                    $unItemPedido->setEstado($unaRow["estado"]);
+
+                    $unItemPedido->setNombreCliente($unaRow["nombre_cliente"]);
+                    $unItemPedido->setIdMesa($unaRow["id_mesa"]);
+                    $unItemPedido->setCodigoAmigable($unaRow["codigo_amigable"]);
+                    $unItemPedido->setCodigoAmigableMesa($unaRow["codigo_amigable_mesa"]);
+                    $unItemPedido->setEstadoMesa($unaRow["estado_mesa"]);
 
                     $auxReturn = new Resultado(false, $unItemPedido, EstadosError::OK);
 
@@ -376,7 +473,7 @@ class ItemPedidoDAO extends ItemPedido
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
             $auxQuerySQL = "SELECT
-                                id_item_pedido, id_pedido, fecha_inicio_preparacion, fecha_fin_preparacion, id_articulo, cantidad, tiempo_estimado, id_usuario_creador, id_usuario_asignado, estado
+                                id_item_pedido, fecha_hora_creacion, id_pedido, fecha_hora_inicio_preparacion, fecha_hora_fin_preparacion, id_articulo, cantidad, tiempo_estimado, id_usuario_creador, id_usuario_asignado, estado
                             FROM ItemsPedidos WHERE estado != 0 AND id_articulo = :id_articulo";
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
@@ -392,9 +489,10 @@ class ItemPedidoDAO extends ItemPedido
                     $unItemPedido = new ItemPedido();
 
                     $unItemPedido->setIdItemPedido($rows["id_item_pedido"]);
+                    $unItemPedido->setIdItemPedido($rows["fecha_hora_creacion"]);
                     $unItemPedido->setIdPedido($rows["id_pedido"]);
-                    $unItemPedido->setFechaHoraInicio($rows["fecha_inicio_preparacion"]);
-                    $unItemPedido->setFechaHoraFin($rows["fecha_fin_preparacion"]);
+                    $unItemPedido->setFechaHoraInicio($rows["fecha_hora_inicio_preparacion"]);
+                    $unItemPedido->setFechaHoraFin($rows["fecha_hora_fin_preparacion"]);
                     $unItemPedido->setIdArticulo($rows["id_articulo"]);
                     $unItemPedido->setCantidad($rows["cantidad"]);
                     $unItemPedido->setTiempoEstimado($rows["tiempo_estimado"]);
@@ -458,13 +556,14 @@ class ItemPedidoDAO extends ItemPedido
 
                 foreach ($rows as $unaRow) {
 
-                    $unItemPedido = new ItemPedido();
+                    $unItemPedido = new ItemPedidoRelacionado();
 
                     $unItemPedido->setIdItemPedido($unaRow["id_item_pedido"]);
+                    $unItemPedido->setIdItemPedido($unaRow["fecha_hora_creacion"]);
                     $unItemPedido->setIdPedido($unaRow["id_pedido"]);
                     $unItemPedido->setCodigoAmigable($unaRow["codigo_amigable"]);
-                    $unItemPedido->setFechaHoraInicio($unaRow["fecha_inicio_preparacion"]);
-                    $unItemPedido->setFechaHoraFin($unaRow["fecha_fin_preparacion"]);
+                    $unItemPedido->setFechaHoraInicio($unaRow["fecha_hora_inicio_preparacion"]);
+                    $unItemPedido->setFechaHoraFin($unaRow["fecha_hora_fin_preparacion"]);
                     $unItemPedido->setIdArticulo($unaRow["id_articulo"]);
                     $unItemPedido->setCantidad($unaRow["cantidad"]);
                     $unItemPedido->setIdSector($unaRow["id_sector"]);
@@ -492,6 +591,11 @@ class ItemPedidoDAO extends ItemPedido
         }
 
         return $auxReturn;
+    }
+
+    public static function TraerItemsPedidoDeUnPedido($idPedido)
+    {
+
     }
 
     #endregion

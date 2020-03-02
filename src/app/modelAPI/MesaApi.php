@@ -2,6 +2,8 @@
 
 require_once '../src/app/modelAPI/IApiControler.php';
 require_once '../src/app/ModelDAO/MesaDAO.php';
+require_once '../src/app/ModelDAO/ItemPedidoDAO.php';
+require_once '../src/app/enum/EstadosCabeceraPedidos.php';
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -12,6 +14,19 @@ class MesaAPI
     {
         $auxReturn = MesaDAO::TraerTodos();
 
+        if ($auxReturn->getStatus() == EstadosError::OK) {
+            $listadoMesas = $auxReturn->getMensaje();
+            $listadoMesasFormateadas = [];
+
+            foreach ($listadoMesas as $unaMesa) {
+                $unaMesaFormateada = Self::FormatearMesa($unaMesa);
+
+                array_push($listadoMesasFormateadas, $unaMesaFormateada);
+            }
+
+            $auxReturn = new Resultado(false, $listadoMesasFormateadas, EstadosError::OK);
+        }
+
         $response->getBody()->write(json_encode($auxReturn));
         $response = $response->withHeader('Content-Type', 'application/json');
         $response = $response->withStatus($auxReturn->getStatus());
@@ -21,15 +36,14 @@ class MesaAPI
 
     public function TraerUno(Request $request, Response $response, $args)
     {
-        $nroMesa = $request->getAttribute('id');
-        $auxReturn = MesaDAO::TraerUno($nroMesa);
+        $identificadorMesa = $request->getAttribute('identificadorMesa');
+        $auxReturn = MesaDAO::TraerUno($identificadorMesa);
 
         // Formamos la salida
         if ($auxReturn->getStatus() == EstadosError::OK) {
-            $unaMesa = new stdClass();
-            $unaMesa->nro_mesa = $auxReturn->getMensaje()->getNumeroMesa();
-            $unaMesa->estado = EstadosMesas::TraerEstadoPorId($auxReturn->getMensaje()->getEstado());
-            $auxReturn = new Resultado(false, $unaMesa, EstadosError::OK);
+
+            $unaMesaFormateada = Self::FormatearMesa($auxReturn->getMensaje());
+            $auxReturn = new Resultado(false, $unaMesaFormateada, EstadosError::OK);
         }
 
         $response->getBody()->write(json_encode($auxReturn));
@@ -41,17 +55,7 @@ class MesaAPI
 
     public function CargarUno(Request $request, Response $response, $args)
     {
-        $parametros = $request->getParsedBody();
-
-        // Verificamos que no exista otra mesa con ese numero
-        $auxReturn = MesaDAO::TraerUno($parametros["nro_mesa"]);
-        if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS) {
-            $auxReturn = MesaDAO::CargarUno($parametros);
-        } else if ($auxReturn->getStatus() == EstadosError::OK) {
-            $mensaje = "Existe otra mesa con ese nro_mesa";
-            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_PARAMETROS_INVALIDOS);
-        }
-
+        $auxReturn = MesaDAO::CargarUno();
         $response->getBody()->write(json_encode($auxReturn));
         $response = $response->withHeader('Content-Type', 'application/json');
         $response = $response->withStatus($auxReturn->getStatus());
@@ -61,20 +65,21 @@ class MesaAPI
 
     public function BorrarUno(Request $request, Response $response, $args)
     {
-        $nroMesa = $request->getAttribute('nroMesa');
+        $identificadorMesa = $request->getAttribute('identificadorMesa');
         // Verificamos el estado de la mesa
-        $auxReturn = MesaDAO::VerificarEstadoPorNroMesa($nroMesa);
+        $auxReturn = MesaDAO::TraerUno($identificadorMesa);
         if ($auxReturn->getStatus() == EstadosError::OK) {
-            $estadoMesa = $auxReturn->getMensaje();
+            $mesaSeleccionada = $auxReturn->getMensaje();
+
             // Verificamos si la mesa esta cerrada
-            if ($estadoMesa != 1) {
-                $mensaje = "No se puede eliminar la mesa, debe estar con estado CERRADA y su estado actual es: " . EstadosMesas::TraerEstadoPorId($estadoMesa);
+            if ($mesaSeleccionada->getEstado() != EstadosMesas::CERRADA[0]) {
+                $mensaje = sprintf("No es posible eliminar la mesa en este momento. Su estado actual es: %s (Debe estar con estado CERRADA)", EstadosMesas::TraerEstadoPorId($mesaSeleccionada->getEstado()));
                 $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
             } else {
                 // Si la mesa esta cerrada entonces le cambiamos el estado a deshabilitada
-                $auxReturn = MesaDAO::CambiarEstado($nroMesa, EstadosMesas::DESHABILITADA);
-                if ($auxReturn->getStatus = EstadosError::OK) {
-                    $auxReturn = new Resultado(false, "Se elimino correctamente la mesa", EstadosError::OK);
+                $auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::DESHABILITADA);
+                if ($auxReturn->getStatus() == EstadosError::OK) {
+                    $auxReturn = new Resultado(false, "Se elimino correctamente la mesa $identificadorMesa", EstadosError::OK);
                 }
             }
         }
@@ -98,31 +103,35 @@ class MesaAPI
     public function AbrirMesa(Request $request, Response $response, $args)
     {
         $auxReturn = new Resultado(false, null, EstadosError::OK);
-        $nroMesa = $request->getAttribute('nroMesa');
+        $identificacionMesa = $request->getAttribute('identificadorMesa');
         $parametros = $request->getParsedBody();
         $idUsuario = $request->getHeader("datosUsuario")[0]->id_usuario;
-        $mesaSeleccionada = new Mesa(); // La instancia para poder utilizar el autocompletado del VSC
 
         // Nos traemos la mesa seleccionada
-        $auxReturn = MesaDAO::TraerUno($nroMesa);
+        $auxReturn = MesaDAO::TraerUno($identificacionMesa);
         if ($auxReturn->getStatus() == EstadosError::OK) {
             $mesaSeleccionada = $auxReturn->getMensaje();
 
             // Si la mesa tiene un estado distinta a cerrada
-            if ($mesaSeleccionada->getEstado() != 1) {
-
+            if ($mesaSeleccionada->getEstado() != EstadosMesas::CERRADA[0]) {
                 $mensaje = "La mesa ya se encuentra abierta! El estado actual es: " . EstadosMesas::TraerEstadoPorId($mesaSeleccionada->getEstado());
                 $auxReturn = new Resultado(false, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
 
                 // Si la mesa se encuentra cerrada, la abrimos y creamos la cabecera de un pedido vacio
-            } else if ($mesaSeleccionada->getEstado() == 1) {
-                $auxReturn = MesaDAO::CambiarEstado($nroMesa, EstadosMesas::CON_CLIENTES_ELIGIENDO);
+            } else if ($mesaSeleccionada->getEstado() == EstadosMesas::CERRADA[0]) {
+                $auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::CON_CLIENTES_ELIGIENDO);
+
                 if ($auxReturn->getStatus() == EstadosError::OK) {
+
+                    date_default_timezone_set('America/Argentina/Buenos_Aires');
 
                     $nuevoPedido = new CabeceraPedido();
                     $nuevoPedido->setIdMesa($mesaSeleccionada->getIdMesa());
                     $nuevoPedido->setNombreCliente($parametros["nombre_cliente"]);
                     $nuevoPedido->setIdUsuario($idUsuario);
+                    $nuevoPedido->setCodigoAmigable(GenerarCodigoAmigable());
+                    $nuevoPedido->setFechaInicio(date('d/m/y H:i'));
+                    $nuevoPedido->setEstado(EstadosCabeceraPedido::ACTIVO[0]);
 
                     // Creamos un nuevo pedido vacio
                     $auxReturn = CabeceraPedidoDAO::CargarUno($nuevoPedido);
@@ -150,5 +159,170 @@ class MesaAPI
         return $response;
     }
 
-}
+    public static function CerrarMesa(Request $request, Response $response)
+    {
+        $identificacionMesa = $request->getAttribute('identificadorMesa');
+        $idUsuarioActual = $request->getHeader("datosUsuario")[0]->id_usuario;
+        $idRolUsuarioActual = $request->getHeader("datosUsuario")[0]->id_rol;
+        $listadoItemPedidosSinFinalizar = [];
 
+        // Verificamos que el usuario tenga el rol de socio
+        if ($idRolUsuarioActual != Roles::SOCIO[0]) 
+        {
+            $nombreUsuarioActual = UsuarioDAO::TraerUno($idUsuarioActual)->getMensaje()->getNombreUsuario();
+            $mensaje = sprintf("La mesa solo puede ser cerrada por un usuario con rol de Socio. El usuario actual es: %s (Rol %s)", $nombreUsuarioActual, Roles::TraerRolPorId($idRolUsuarioActual));
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
+
+        } else {
+            $auxReturn = MesaDAO::TraerUno($identificacionMesa);
+            if ($auxReturn->getStatus() == EstadosError::OK) 
+            {
+                $mesaSeleccionada = $auxReturn->getMensaje();
+                if ($mesaSeleccionada->getEstado() == EstadosMesas::CERRADA[0])
+                {
+                    $auxReturn = new Resultado(true, "La mesa $identificacionMesa se encuentra cerrada", EstadosError::ERROR_OPERACION_INVALIDA);
+
+                } else 
+                {
+                    // Nos traemos todos los items de pedido de esa mesa
+                    $auxReturn = ItemPedidoDAO::TraerPedidos(null, null, $mesaSeleccionada->getIdMesa(), null);
+                    if ($auxReturn->getStatus() == EstadosError::OK) 
+                    {
+                        $listadoDeItemsPedido = $auxReturn->getMensaje();
+                        // Verificamos que no se encuentren pedidos con pendientes
+
+                        foreach ($listadoDeItemsPedido as $unItemPedido) 
+                        {
+                            $estadoItemPedido = $unItemPedido->getEstado();
+    
+                            if ($estadoItemPedido != EstadosItemPedido::ENTREGADO[0] && $estadoItemPedido != EstadosItemPedido::CANCELADO[0] && $estadoItemPedido != EstadosItemPedido::CERRADO[0]) 
+                            {
+                                $unItemPedidoFormateado = ItemPedidoApi::FormatearItemPedido($unItemPedido, null);
+                                array_push($listadoItemPedidosSinFinalizar, $unItemPedidoFormateado);
+                            }
+                        }
+                        
+                    }
+
+                    if ((count($listadoItemPedidosSinFinalizar) > 0))
+                    {
+                        $mensaje = new stdClass();
+                        $mensaje->mensaje = "Los siguientes items de pedidos que todavia no fueron entregados (para poder cerrar la mesa deben estar con estado Entregado o Cancelado)";
+                        $mensaje->detalles = $listadoItemPedidosSinFinalizar;
+                        $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
+                    } else 
+                    {
+                        $auxReturn = CabeceraPedidoDAO::TraerPedidoPorMesa($mesaSeleccionada->getIdMesa());
+                        if ($auxReturn->getStatus() == EstadosError::OK)
+                        {
+                            $idPedido = $auxReturn->getMensaje();
+                            $auxReturn = CabeceraPedidoDAO::CambiarEstado($idPedido, EstadosCabeceraPedido::CERRADO);
+                            if ($auxReturn->getStatus() == EstadosError::OK)
+                            {
+                                $auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::CERRADA);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+
+    }
+
+    public static function PagarMesa(Request $request, Response $response)
+    {
+        $identificacionMesa = $request->getAttribute('identificadorMesa');
+        $idUsuarioActual = $request->getHeader("datosUsuario")[0]->id_usuario;
+        $idRolUsuarioActual = $request->getHeader("datosUsuario")[0]->id_rol;
+        $importeMesa = 0;
+        $listadoItemsCobrados = [];
+
+        // Verificamos que el usuario tenga el rol de socio
+        if ($idRolUsuarioActual != Roles::SOCIO[0] && $idRolUsuarioActual != Roles::MOZO[0]) 
+        {
+            $nombreUsuarioActual = UsuarioDAO::TraerUno($idUsuarioActual)->getMensaje()->getNombreUsuario();
+            $mensaje = sprintf("La accion solo esta permitida para usuarios con rol de Mozo o Socio. El usuario actual es: %s (Rol %s)", $nombreUsuarioActual, Roles::TraerRolPorId($idRolUsuarioActual));
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_OPERACION_INVALIDA);
+
+        } else 
+        {
+            $auxReturn = MesaDAO::TraerUno($identificacionMesa);
+            if ($auxReturn->getStatus() == EstadosError::OK) 
+            {
+                $mesaSeleccionada = $auxReturn->getMensaje();
+                if ($mesaSeleccionada->getEstado() == EstadosMesas::CERRADA[0])
+                {
+                    $auxReturn = new Resultado(true, "La mesa $identificacionMesa se encuentra cerrada", EstadosError::ERROR_OPERACION_INVALIDA);
+
+                } else 
+                {
+                    // Nos traemos todos los items de pedido de esa mesa
+                    $auxReturn = ItemPedidoDAO::TraerPedidos(null, null, $mesaSeleccionada->getIdMesa(), null);
+                    if ($auxReturn->getStatus() == EstadosError::OK) 
+                    {
+                        $listadoDeItemsPedido = $auxReturn->getMensaje();
+                        // Verificamos que no se encuentren pedidos con pendientes
+
+                        foreach ($listadoDeItemsPedido as $unItemPedido) 
+                        {
+                            $estadoItemPedido = $unItemPedido->getEstado();
+    
+                            if ($estadoItemPedido != EstadosItemPedido::CANCELADO[0] && $estadoItemPedido != EstadosItemPedido::CERRADO[0]) 
+                            {
+                                $importeArticulo = $unItemPedido->getImporteArticulo();
+                                $cantidad = $unItemPedido->getCantidad();
+                                
+                                $unItemCobrado = new stdClass();
+                                $unItemCobrado->descripcion_articulo = $unItemPedido->getDescripcionArticulo();
+                                $unItemCobrado->importe_unitario = $importeArticulo;
+                                $unItemCobrado->cantidad = $cantidad;
+                                $unItemCobrado->total = $importeArticulo * $cantidad;
+
+                                $importeMesa = $importeMesa + ($importeArticulo * $cantidad);
+
+                                array_push($listadoItemsCobrados, $unItemCobrado);
+                            }
+                        }
+                    }
+
+                    //$auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::CERRADA);
+                    if (count($listadoItemsCobrados) > 0) 
+                    {
+                        $mensaje = new stdClass();
+                        $mensaje->mensaje = "El importe total de la mesa es: " . $importeMesa;
+                        $mensaje->detalles = $listadoItemsCobrados;
+
+                        $auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::CON_CLIENTES_PAGANDO);
+                        if ($auxReturn->getStatus() == EstadosError::OK)
+                        {
+                            $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+                        }
+                    }
+                }
+            }
+        }
+
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+    }
+
+    private static function FormatearMesa($unaMesa)
+    {
+        $unaMesaFormateada = new stdClass();
+        $unaMesaFormateada->id_mesa = $unaMesa->getIdMesa();
+        $unaMesaFormateada->codigo_amigable = $unaMesa->getCodigoAmigable();
+        $unaMesaFormateada->estado = EstadosMesas::TraerEstadoPorId($unaMesa->getEstado());
+
+        return $unaMesaFormateada;
+    }
+
+}

@@ -6,7 +6,8 @@ class EstadosItemPedido
     public const PENDIENTE = [1, "PENDIENTE"];
     public const EN_PREPARACION = [2, "EN PREPARACION"];
     public const LISTO_PARA_SERVIR = [3, "LISTO PARA SERVIR"];
-    public const CANCELADO = [4, "CANCELADO"];
+    public const ENTREGADO = [4, "ENTREGADO"];
+    public const CANCELADO = [10, "CANCELADO"];
 
     public static function TraerEstadoPorId($idEstado)
     {
@@ -16,6 +17,7 @@ class EstadosItemPedido
                             EstadosItemPedido::PENDIENTE, 
                             EstadosItemPedido::EN_PREPARACION, 
                             EstadosItemPedido::LISTO_PARA_SERVIR,
+                            EstadosItemPedido::ENTREGADO,
                             EstadosItemPedido::CANCELADO
                         ];
         foreach ($ARRAY_ESTADOS as $unEstado) {

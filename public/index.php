@@ -28,6 +28,7 @@ require '../src/routes/ItemPedidoRoutes.php';
 require '../src/routes/ArticulosRoutes.php';
 require '../src/routes/UsuariosRoutes.php';
 require '../src/routes/SectoresRoutes.php';
+require '../src/routes/ClientesRoutes.php';
 
 $app->group("/login", function () {
 
@@ -35,11 +36,6 @@ $app->group("/login", function () {
 
 });
 
-$app->group('/pruebas', function () {
-
-    //$this->get('', \CabeceraPedido::class . ':GenerarCodigo');
-    $this->get('/{id}', \CabeceraPedidoApi::class . ':TraerPedidoPorMesa');
-});
 
 $app->run();
 
