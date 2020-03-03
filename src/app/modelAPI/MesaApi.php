@@ -325,4 +325,90 @@ class MesaAPI
         return $unaMesaFormateada;
     }
 
+    public static function TraerMesaMasUsada(Request $request, Response $response)
+    {
+        $parametros = $request->getParsedBody();
+        $fechaHoraDesde = FormatearFechaParaWhere($parametros["desde"]);
+        $fechaHoraHasta = FormatearFechaParaWhere($parametros["hasta"]);
+
+        $auxReturn = MesaDAO::TraerMesaMasUsada($fechaHoraDesde, $fechaHoraHasta);
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+    }
+
+    public static function TraerMesaMenosUsada(Request $request, Response $response)
+    {
+        $parametros = $request->getParsedBody();
+        $fechaHoraDesde = FormatearFechaParaWhere($parametros["desde"]);
+        $fechaHoraHasta = FormatearFechaParaWhere($parametros["hasta"]);
+
+        $auxReturn = MesaDAO::TraerMesaMenosUsada($fechaHoraDesde, $fechaHoraHasta);
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+    }
+
+    public static function TraerMesaMasFacturo(Request $request, Response $response)
+    {
+        $parametros = $request->getParsedBody();
+        $fechaHoraDesde = FormatearFechaParaWhere($parametros["desde"]);
+        $fechaHoraHasta = FormatearFechaParaWhere($parametros["hasta"]);
+
+        $auxReturn = MesaDAO::TraerMesaMasFacturo($fechaHoraDesde, $fechaHoraHasta);
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+    }
+
+    public static function TraerMesaMenosFacturo(Request $request, Response $response)
+    {
+        $parametros = $request->getParsedBody();
+        $fechaHoraDesde = FormatearFechaParaWhere($parametros["desde"]);
+        $fechaHoraHasta = FormatearFechaParaWhere($parametros["hasta"]);
+
+        $auxReturn = MesaDAO::TraerMesaMenosFacturo($fechaHoraDesde, $fechaHoraHasta);
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+    }
+
+    public static function TraerMesasMayorImporte(Request $request, Response $response)
+    {
+        $parametros = $request->getParsedBody();
+        $fechaHoraDesde = FormatearFechaParaWhere($parametros["desde"]);
+        $fechaHoraHasta = FormatearFechaParaWhere($parametros["hasta"]);
+
+        $auxReturn = MesaDAO::TraerMesasMayorImporte($fechaHoraDesde, $fechaHoraHasta);
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+    }
+
+    public static function TraerMesasMenorImporte(Request $request, Response $response)
+    {
+        $parametros = $request->getParsedBody();
+        $fechaHoraDesde = FormatearFechaParaWhere($parametros["desde"]);
+        $fechaHoraHasta = FormatearFechaParaWhere($parametros["hasta"]);
+
+        $auxReturn = MesaDAO::TraerMesasMenorImporte($fechaHoraDesde, $fechaHoraHasta);
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+    }
+
+    
+
 }

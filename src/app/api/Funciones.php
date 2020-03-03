@@ -43,4 +43,10 @@ function SumarTiempos ($times) {
     return sprintf('%02d:%02d', $hours, $minutes);
 }
 
+function FormatearFechaParaWhere($fecha)
+{
+    $date = str_replace('/', '-', $fecha);
+    return date('Y-m-d H:i:s', strtotime($date));
+}
+
 ?>

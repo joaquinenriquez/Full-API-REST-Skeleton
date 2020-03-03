@@ -5,6 +5,8 @@ require_once "../src/app/modelAPI/AutentificadorJWT.php";
 require_once "../src/app/modelAPI/TokenSeguridad.php";
 require_once "../src/app/enum/EstadosUsuarios.php";
 require_once "../src/app/Querys/QuerysSQL_Usuarios.php";
+require_once "../src/app/ModelDAO/LogDAO.php";
+require_once "../src/app/enum/Acciones.php";
 
 class UsuarioDAO
 {
@@ -46,10 +48,12 @@ class UsuarioDAO
                 {
                     $mensaje = "El usuario " . $rows["nombre_usuario"] . " se encuentra suspendido";
                     $auxReturn = new Resultado(false, $mensaje, EstadosError::ERROR_DE_AUTORIZACION);
+                    LogDAO::GuardarRegistro(null, null, Acciones::ERROR_INICIO_SESION_USUARIO_SUSPENDIDO);
 
                     // Si no se encuentra ACTIVO
                 } else if ($estadoUsuario != EstadosUsuarios::ACTIVO[0]) {
                     $auxReturn = new Resultado(false, "El usuario no se encuentra activo", EstadosError::ERROR_DE_AUTORIZACION);
+                    LogDAO::GuardarRegistro(null, null, Acciones::ERROR_INICIO_SESION_USUARIO_DESHABILITADO);
 
                 } else 
                 {
@@ -67,11 +71,13 @@ class UsuarioDAO
                         );
 
                         $token = TokenSeguridad::CrearUno($datosToken);
+                        LogDAO::GuardarRegistro($unUsuario->getIdUsuario(), $unUsuario->getRol(), Acciones::INICIO_SESION_CORRECTO);
 
                         $mensaje = "Login correcto (" . strtoupper(Roles::TraerRolPorId($unUsuario->getRol())) . "). TOKEN:" . $token;
                         $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
 
                     } else {
+                        LogDAO::GuardarRegistro($unUsuario->getIdUsuario(), $unUsuario->getRol(), Acciones::ERROR_PASSWORD_INICIO_SESION);
                         $auxReturn = new Resultado(false, "Password Incorrecto", EstadosError::ERROR_DE_AUTORIZACION);
                     }
                 }

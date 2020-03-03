@@ -56,6 +56,21 @@ class Validacion
         return $mensaje;
     }
 
+    public static function FechaHora ($fecha)
+    {
+        //$matches = array();
+        // //$pattern = '/^([0-9]{1,2})\\/([0-9]{1,2})\\/([0-9]{4})$/';
+        // $pattern = new RegExp("^(3[01]|[12][0-9]|0[1-9])/(1[0-2]|0[1-9])/[0-9]{4} (2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$");
+
+        // if (!preg_match($pattern, $fecha, $matches)) return false;
+        // if (!checkdate($matches[2], $matches[1], $matches[3])) return false;
+        //return true;
+
+        $auxFecha = strtotime($fecha);
+        return ($auxFecha);
+
+    }
+
 
 }
 
