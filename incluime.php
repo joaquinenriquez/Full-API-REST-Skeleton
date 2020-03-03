@@ -12,6 +12,7 @@ require_once './src/app/enum/Roles.php';
 
 require_once './src/app/middleware/ArticuloMiddleware.php';
 require_once './src/app/middleware/AuthMiddleware.php';
+require_once './src/app/middleware/MesaMiddleware.php';
 require_once './src/app/middleware/ItemPedidoMiddleware.php';
 require_once './src/app/middleware/LoginMiddleware.php';
 require_once './src/app/middleware/LogMiddleware.php';
