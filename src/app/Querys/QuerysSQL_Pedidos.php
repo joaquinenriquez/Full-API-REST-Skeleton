@@ -73,10 +73,10 @@ class QuerysSQL_Pedidos
             ItemsPedidos.fecha_hora_inicio_preparacion as fecha_hora_inicio_preparacion,
             ItemsPedidos.fecha_hora_fin_preparacion as fecha_hora_fin_preparacion,
             ItemsPedidos.tiempo_estimado as tiempo_estimado,
-            itemspedidos.estado as estado
+            itemspedidos.estado as estado,
 
             cabeceraspedidos.nombre_cliente as nombre_cliente,
-            cabeceraspedidos.codigo_amigable as codigo_amigable,
+            cabeceraspedidos.codigo_amigable as codigo_amigable
 
             FROM ItemsPedidos
             LEFT JOIN articulos on articulos.id_articulo = itemspedidos.id_articulo

@@ -29,8 +29,10 @@ $app->group('/itempedido', function () {
 
     $this->get('/{idItemPedido}', \ItemPedidoApi::class . ':TraerUno');
 
+    $this->get('/pormesa/{identificadorMesa}', \ItemPedidoApi::class . ':TraerPedidosPorMesa');
 
 
+    $this->get('', \ItemPedidoApi::class . ':TraerTodos');
 
 
     //$this->post('/enpreparacion', \ItemPedidoApi::class . ':CambiarEstadoAEnpreparacion');

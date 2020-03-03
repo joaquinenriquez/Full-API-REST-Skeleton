@@ -8,13 +8,16 @@ $app->group("/usuarios", function () {
 
     $this->get('/actual', \UsuarioApi::class . ':TraerUsuarioActual');
 
-    $this->patch('/{idUsuario}/suspender', \UsuarioApi::class . ':SuspenderUsuario');
+    $this->patch('/{idUsuario}/suspender', \UsuarioApi::class . ':SuspenderUsuario')
+        ->add(\AuthMiddleware::class . ':VerificarSiEsAdmin');
     
-    $this->patch('/{idUsuario}/activar', \UsuarioApi::class . ':ActivarUsuario');
+    $this->patch('/{idUsuario}/activar', \UsuarioApi::class . ':ActivarUsuario')
+        ->add(\AuthMiddleware::class . ':VerificarSiEsAdmin');
 
     $this->get('/{idUsuario}', \UsuarioApi::class . ':TraerUno');
 
-    $this->delete('/{idUsuario}', \UsuarioApi::class . ':BorrarUno');
+    $this->delete('/{idUsuario}', \UsuarioApi::class . ':BorrarUno')
+        ->add(\AuthMiddleware::class . ':VerificarSiEsAdmin');
 
     
     $this->post('', \UsuarioApi::class . ':CargarUno')

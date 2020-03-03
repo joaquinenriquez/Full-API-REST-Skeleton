@@ -42,7 +42,7 @@ class ItemPedidoDAO extends ItemPedido
                     $descripcionArticulo = $auxReturn->getMensaje()->getDescripcion();
                 }
 
-                $auxReturn = new Resultado(false, "Se cargo el pedido correctamente! El id del item del pedido es: $idInsertado", EstadosError::RECURSO_CREADO);
+                $auxReturn = new Resultado(false, "Se cargo el pedido correctamente! El id del ultimo item del pedido es: $idInsertado", EstadosError::RECURSO_CREADO);
 
             } else {
                 $auxReturn = new Resultado(true, "Ocurrio un error al intentar guardar ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
@@ -144,7 +144,7 @@ class ItemPedidoDAO extends ItemPedido
         $ubicacionParaMensaje = "ItemPedidoDAO->TomarPedido";
 
         date_default_timezone_set('America/Argentina/Buenos_Aires');
-        $tiempoEstimado = (self::ConvertirIntAMinutos($tiempoEstimado));
+        
         $fechaHoraInicio = date('Y/m/d H:i');
 
         try {

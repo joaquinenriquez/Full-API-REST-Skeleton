@@ -3,7 +3,7 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class SectorApi extends Sector implements IApiController
+class SectorApi
 {
     public function TraerTodos(Request $request, Response $response, $args) 
     {

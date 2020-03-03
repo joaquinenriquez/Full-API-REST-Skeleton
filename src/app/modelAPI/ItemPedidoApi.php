@@ -148,6 +148,69 @@ class ItemPedidoApi
 
     }
 
+    public static function TraerTodos(Request $request, Response $response)
+    {
+        $auxReturn = ItemPedidoDAO::TraerPedidos(null, null, null, null); // Estado, Sector, idMesa, IdUsuarioAsignado
+
+        if ($auxReturn->getStatus() == EstadosError::OK) {
+            // Tuniamos la salida
+            $listadoDePedidos = $auxReturn->getMensaje();
+            $listadoDePedidosFormateados = [];
+
+            foreach ($listadoDePedidos as $unItemPedido) {
+                $unItemPedidoFormateado = self::FormatearItemPedido($unItemPedido, EstadosItemPedido::PENDIENTE);
+                array_push($listadoDePedidosFormateados, $unItemPedidoFormateado);
+            }
+            $auxReturn->setMensaje($listadoDePedidosFormateados);
+
+        } else if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS) {
+            $auxReturn->setMensaje("No hay items de pedidos");
+        }
+
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+
+    }
+
+    public static function TraerPedidosPorMesa(Request $request, Response $response)
+    {
+        $identificacionMesa = $request->getAttribute('identificadorMesa');
+        $auxReturn = MesaDAO::TraerUno($identificacionMesa);
+        
+        if ($auxReturn->getStatus() == EstadosError::OK)
+        {
+            $mesaSeleccionada = $auxReturn->getMensaje();
+            $idMesa = $mesaSeleccionada->getIdMesa();
+            $auxReturn = ItemPedidoDAO::TraerPedidos(null, null, $idMesa, null); // Estado, Sector, idMesa, IdUsuarioAsignado
+
+            if ($auxReturn->getStatus() == EstadosError::OK) {
+                // Tuniamos la salida
+                $listadoDePedidos = $auxReturn->getMensaje();
+                $listadoDePedidosFormateados = [];
+    
+                foreach ($listadoDePedidos as $unItemPedido) {
+                    $unItemPedidoFormateado = self::FormatearItemPedido($unItemPedido, EstadosItemPedido::PENDIENTE);
+                    array_push($listadoDePedidosFormateados, $unItemPedidoFormateado);
+                }
+                $auxReturn->setMensaje($listadoDePedidosFormateados);
+    
+            } else if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS) {
+                $auxReturn->setMensaje("No hay items de pedidos");
+            }
+
+        }
+
+        $response->getBody()->write(json_encode($auxReturn));
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withStatus($auxReturn->getStatus());
+
+        return $response;
+
+    }
+
     public static function TraerPendientesPorSector(Request $request, Response $response)
     {
         $idSector = $request->getAttribute('idSector');
@@ -355,19 +418,38 @@ class ItemPedidoApi
     private static function VerificarSector($idItemPedido, $idRolUsuario)
     {
         // Verificamos si el rol del usuario corresponde al del articulo
-        $auxReturn = ItemPedidoDAO::TraerArticuloByIdItemPedido($idItemPedido);
-        if ($auxReturn->getStatus() == EstadosError::OK) {
-            $articuloSeleccionado = $auxReturn->getMensaje();
-            $sectorArticuloSeleccionado = $articuloSeleccionado->getIdSector();
+        if ($idRolUsuario == Roles::MOZO[0])
+        {
+            $mensaje = "Los mozos no deberian tomar pedidos" ;
+            $auxReturn = new Resultado(false, $mensaje, EstadosError::ERROR_SIN_PERMISOS);
 
-            if ($sectorArticuloSeleccionado != $idRolUsuario && $idRolUsuario != Roles::SOCIO[0]) {
-                $mensaje = "El item del pedido corresponde al rol de: " . strtoupper(Roles::TraerRolPorId($sectorArticuloSeleccionado)) . " y el rol del usuario actual es: " . strtoupper(Roles::TraerRolPorId($idRolUsuario));
-                $auxReturn = new Resultado(false, $mensaje, EstadosError::ERROR_SIN_PERMISOS);
-            } else {
-                $auxReturn = new Resultado(false, "El usuario puede tomar el item del pedidio", EstadosError::OK);
+        } else if ($idRolUsuario == Roles::SOCIO[0])
+        {
+            $auxReturn = new Resultado(false, "El usuario puede tomar el item del pedidio", EstadosError::OK);
+
+        } else
+        {
+            $auxReturn = ItemPedidoDAO::TraerArticuloByIdItemPedido($idItemPedido);
+            if ($auxReturn->getStatus() == EstadosError::OK) 
+            {
+                $articuloSeleccionado = $auxReturn->getMensaje();
+                $sectorArticuloSeleccionado = $articuloSeleccionado->getIdSector();
+                
+                if ($idRolUsuario == Roles::COCINERO[0] && ($sectorArticuloSeleccionado == Sectores::COCINA[0] || $sectorArticuloSeleccionado == Sectores::CANDY_BAR[0]))
+                {
+                    $auxReturn = new Resultado(false, "El usuario puede tomar el item del pedidio", EstadosError::OK);
+
+                } else if ($sectorArticuloSeleccionado != $idRolUsuario)
+                {
+                    $mensaje = "El item del pedido corresponde al sector de: " . strtoupper(Sectores::TraerRolPorId($sectorArticuloSeleccionado)) . " y el rol del usuario actual es: " . strtoupper(Roles::TraerRolPorId($idRolUsuario));
+                    $auxReturn = new Resultado(false, $mensaje, EstadosError::ERROR_SIN_PERMISOS);
+                } else
+                {
+                    $auxReturn = new Resultado(false, "El usuario puede tomar el item del pedidio", EstadosError::OK);
+                }
             }
         }
-
+ 
         return $auxReturn;
     }
 
@@ -516,6 +598,9 @@ class ItemPedidoApi
         $unItemPedidoFormateado->nombre_cliente = $unItemPedido->getNombreCliente();
         $unItemPedidoFormateado->articulo = $unItemPedido->getDescripcionArticulo();
         $unItemPedidoFormateado->cantidad = $unItemPedido->getCantidad();
+        $unItemPedidoFormateado->codigo_amigable_mesa = $unItemPedido->getCodigoAmigableMesa();
+        $unItemPedidoFormateado->codigo_amigable_pedido = $unItemPedido->getCodigoAmigable();
+        $unItemPedidoFormateado->id_item_pedido = $unItemPedido->getIdItemPedido();
         $unItemPedidoFormateado->estado = EstadosItemPedido::TraerEstadoPorId($unItemPedido->getEstado());
 
         if ($unItemPedido->getEstado() == EstadosItemPedido::EN_PREPARACION[0])

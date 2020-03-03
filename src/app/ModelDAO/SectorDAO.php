@@ -1,6 +1,6 @@
 <?php
 
-class SectorDAO extends Sector
+class SectorDAO
 {
     /* #region  Métodos */
     public static function TraerTodos()

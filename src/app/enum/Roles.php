@@ -3,7 +3,7 @@
 class Roles
 {
 
-    public const COCINERO = [1, "Cocinero"];
+    public const COCINERO = [1,  "Cocinero"];
     public const BARTENDER = [2, "Bartender"];
     public const CERVECERO = [3, "Cervecero"];
     public const MOZO = [4, "Mozo"];

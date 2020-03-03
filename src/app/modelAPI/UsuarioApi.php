@@ -11,18 +11,25 @@ class UsuarioApi
         $ubicacionParaMensaje = "UsuarioApi->CargarUno";
         $parametros = $request->getParsedBody();
 
+        // Verificamos que no exista otro con el mismo nombre
         $nombreDeUsuario = $parametros["nombre_usuario"];
-        UsuarioDAO::TraerUsuarioPorNombreDeUsuario($nombreDeUsuario);
+        $auxReturn = UsuarioDAO::TraerUsuarioPorNombreDeUsuario($nombreDeUsuario);
+        if ($auxReturn->getStatus() == EstadosError::OK)
+        {
+            $auxReturn = new Resultado(true, "Ya existe otro usuario con ese nombre de usuario", EstadosError::ERROR_RECURSO_REPETIDO);
+        } else 
+        {
+            $nuevoUsuario = new Usuario();
+            $nuevoUsuario->setNombreUsuario($parametros["nombre_usuario"]);
+            $nuevoUsuario->setPassword($parametros["password"]);
+            $nuevoUsuario->setRol($parametros["id_rol"]);
+            $nuevoUsuario->setNombre($parametros["nombre"]);
+            $nuevoUsuario->setApellido($parametros["apellido"]);
+            $nuevoUsuario->setEstado(1);
+    
+            $auxReturn = UsuarioDAO::CargarUno($nuevoUsuario);
 
-        $nuevoUsuario = new Usuario();
-        $nuevoUsuario->setNombreUsuario($parametros["nombre_usuario"]);
-        $nuevoUsuario->setPassword($parametros["password"]);
-        $nuevoUsuario->setRol($parametros["id_rol"]);
-        $nuevoUsuario->setNombre($parametros["nombre"]);
-        $nuevoUsuario->setApellido($parametros["apellido"]);
-        $nuevoUsuario->setEstado(1);
-
-        $auxReturn = UsuarioDAO::CargarUno($nuevoUsuario);
+        }
 
         $response->getBody()->write(json_encode($auxReturn));
         $response = $response->withHeader('Content-Type', 'application/json');

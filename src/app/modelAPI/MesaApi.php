@@ -125,7 +125,7 @@ class MesaAPI
                     $nuevoPedido->setNombreCliente($parametros["nombre_cliente"]);
                     $nuevoPedido->setIdUsuario($idUsuario);
                     $nuevoPedido->setCodigoAmigable(GenerarCodigoAmigable());
-                    $nuevoPedido->setFechaInicio(date('d/m/y H:i'));
+                    $nuevoPedido->setFechaInicio(date('Y-m-d H:i:s'));
                     $nuevoPedido->setEstado(EstadosCabeceraPedido::ACTIVO[0]);
 
                     // Creamos un nuevo pedido vacio

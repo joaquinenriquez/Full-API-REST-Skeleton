@@ -4,13 +4,16 @@ $app->group('/mesas', function () {
 
     $this->get('', \MesaApi::class . ':TraerTodos');
 
-    $this->post('', \MesaApi::class . ':CargarUno');
+    $this->post('', \MesaApi::class . ':CargarUno')
+    ->add(\AuthMiddleware::class . ':VerificarSiEsAdmin');
 
     $this->put('/{identificadorMesa}', \MesaApi::class . ':ModificarUno');
 
     $this->get('/{identificadorMesa}', \MesaApi::class . ':TraerUno');
 
-    $this->delete('/{identificadorMesa}', \MesaApi::class . ':BorrarUno');
+    $this->delete('/{identificadorMesa}', \MesaApi::class . ':BorrarUno')
+    ->add(\AuthMiddleware::class . ':VerificarSiEsAdmin');
+
 
     $this->post('/{identificadorMesa}/abrir', \MesaApi::class . ':AbrirMesa')
        ->add(\MesaMiddleware::class . ":VerificarParametrosAbrirMesa")
