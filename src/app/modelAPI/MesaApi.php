@@ -1,10 +1,5 @@
 <?php
 
-require_once '../src/app/modelAPI/IApiControler.php';
-require_once '../src/app/ModelDAO/MesaDAO.php';
-require_once '../src/app/ModelDAO/ItemPedidoDAO.php';
-require_once '../src/app/enum/EstadosCabeceraPedidos.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 

@@ -1,9 +1,5 @@
 <?php
 
-require_once '../src/app/model/Resultado.php';
-require_once '../src/app/model/Validacion.php';
-require_once '../src/app/ModelDAO/SectorDAO.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -38,6 +34,7 @@ class SectorMiddleware {
 
     public function VerificarParametrosModificarSector(Request $request, Response $response, $next) 
     {
+        $ubicacionParaMensaje = "SectorMiddleware->VerificarParametrosModificarSector";
         $auxReturn = new Resultado(false, null, EstadosError::OK);
         $idSector = $request->getAttribute('routeInfo')[2]['id'];
         $parametros = $request->getParsedBody();

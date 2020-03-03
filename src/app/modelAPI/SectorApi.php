@@ -1,10 +1,5 @@
 <?php
 
-require_once '../src/app/model/sector.php';
-require_once '../src/app/modelAPI/IApiControler.php';
-require_once '../src/app/api/responseJSON.php';
-require_once '../src/app/enum/responseJSONEstados.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 

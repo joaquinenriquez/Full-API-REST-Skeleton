@@ -1,8 +1,5 @@
 <?php
 
-require_once '../src/app/ModelDAO/LogDAO.php';
-require_once '../src/app/api/Funciones.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 

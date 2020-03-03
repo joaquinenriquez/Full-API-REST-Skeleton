@@ -1,10 +1,5 @@
 <?php
 
-require_once '../src/app/model/Resultado.php';
-require_once '../src/app/model/Validacion.php';
-require_once '../src/app/ModelDAO/UsuarioDAO.php';
-require_once '../src/app/middleware/LogMiddleware.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 

@@ -1,7 +1,5 @@
 <?php
 
-require_once '../src/app/middleware/LogMiddleware.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 

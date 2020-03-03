@@ -1,10 +1,5 @@
 <?php
 
-require_once '../src/app/model/ItemPedido.php';
-require_once '../src/app/ModelDAO/ItemPedidoDAO.php';
-require_once '../src/app/enum/Roles.php';
-require_once '../src/app/ModelDAO/UsuarioDAO.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Symfony\Component\Translation\Interval;

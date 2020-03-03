@@ -1,6 +1,5 @@
 <?php
 require_once '../src/app/reports/fpdf/fpdf.php';
-require_once '../src/app/ModelDAO/ItemPedidoDAO.php';
 
 use Slim\Http\Request;
 use Slim\Http\Response;

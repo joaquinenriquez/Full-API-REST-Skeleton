@@ -1,11 +1,5 @@
 <?php
 
-require_once '../src/app/modelAPI/AutentificadorJWT.php';
-require_once '../src/app/modelAPI/TokenSeguridad.php';
-require_once '../src/app/enum/Roles.php';
-require_once '../src/app/Querys/QuerysSQL_Logs.php';
-require_once '../src/app/ModelDAO/LogDAO.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 

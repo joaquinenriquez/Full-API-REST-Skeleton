@@ -1,12 +1,5 @@
 <?php
 
-require_once '../src/app/model/Mesa.php';
-require_once '../src/app/modelDAO/UsuarioDAO.php';
-require_once '../src/app/api/responseJSON.php';
-require_once '../src/app/enum/EstadosMesas.php';
-require_once '../src/app/modelDAO/CabeceraPedidoDAO.php';
-require_once '../src/app/Querys/QuerysSQL_Mesas.php';
-require_once '../src/app/api/Funciones.php';
 
 class MesaDAO extends Mesa
 {

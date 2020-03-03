@@ -1,7 +1,5 @@
 <?php
 
-require_once "../src/app/model/ItemPedido.php";
-
 class ItemPedidoRelacionado extends ItemPedido
 {
 

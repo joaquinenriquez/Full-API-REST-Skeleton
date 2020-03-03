@@ -1,13 +1,5 @@
 <?php
 
-require_once "../src/app/model/Usuario.php";
-require_once "../src/app/modelAPI/AutentificadorJWT.php";
-require_once "../src/app/modelAPI/TokenSeguridad.php";
-require_once "../src/app/enum/EstadosUsuarios.php";
-require_once "../src/app/Querys/QuerysSQL_Usuarios.php";
-require_once "../src/app/ModelDAO/LogDAO.php";
-require_once "../src/app/enum/Acciones.php";
-
 class UsuarioDAO
 {
 

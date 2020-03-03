@@ -1,7 +1,5 @@
 <?php
 
-require_once '../src/app/ModelDAO/UsuarioDAO.php';
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 

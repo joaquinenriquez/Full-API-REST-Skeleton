@@ -62,6 +62,7 @@ class ArticuloMiddleware
 
     public function VerificarParametrosModificarArticulo(Request $request, Response $response, $next) 
     {
+        $ubicacionParaMensaje = "ArticuloMiddleware->VerificarParametrosModificarArticulo";
         $auxReturn = new Resultado(false, null, EstadosError::OK);
         $idArticulo = $request->getAttribute('routeInfo')[2]['id'];
         $parametros = $request->getParsedBody();

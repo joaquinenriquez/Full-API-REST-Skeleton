@@ -1,12 +1,5 @@
 <?php
 
-require_once '../src/app/model/CabeceraPedido.php';
-require_once '../src/app/model/CabeceraPedido.php';
-require_once '../src/app/enum/EstadosError.php';
-require_once '../src/app/model/Resultado.php';
-require_once '../src/app/ModelDAO/CabeceraPedidoDAO.php';
-require_once '../src/app/Querys/QuerysSQL_CabecerasPedidos.php';
-
 class CabeceraPedidoDAO extends CabeceraPedido
 {
 /* #region  Métodos */
@@ -38,8 +31,8 @@ class CabeceraPedidoDAO extends CabeceraPedido
                     // Recorremos cada row que nos devolvio la consulta y se lo asignamos a nuestro objeto
                     foreach ($rows[0] as $unaRow) {
                         $unaMesa = new Mesa();
-                        $unaMesa->setIdMesa($unaRow["idMesa"]);
-                        $unaMesa->setNumeroMesa($unaRow["nroMesa"]);
+                        $unaMesa->setIdMesa($unaRow["id_mesa"]);
+                        $unaMesa->setCodigoAmigable($unaRow["codigo_amigable"]);
                         $unaMesa->setEstado($unaRow["estado"]);
 
                         array_push($comandas, $unaMesa);
@@ -63,14 +56,13 @@ class CabeceraPedidoDAO extends CabeceraPedido
 
     public static function TraerUno($idMesa)
     {
-        $auxReturn;
         $unaMesa = new Mesa();
         $ubicacionParaMensaje = "Mesa->TraerUno";
 
         try
         {
             $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
-            $auxQuerySQL = "SELECT idMesa, nroMesa, estado FROM mesas WHERE estado != 0 AND idMesa = :idMesa";
+            $auxQuerySQL = "SELECT id_mesa, codigo_amigable, estado FROM mesas WHERE estado != 0 AND idMesa = :idMesa";
 
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
@@ -81,8 +73,8 @@ class CabeceraPedidoDAO extends CabeceraPedido
 
             // Si se encontro uno
             if ($row) {
-                $unaMesa->setIdMesa($row["idMesa"]);
-                $unaMesa->setNumeroMesa($row["nroMesa"]);
+                $unaMesa->setIdMesa($row["id_mesa"]);
+                $unaMesa->setCodigoAmigable($row["codigo_amigable"]);
                 $unaMesa->setEstado($row["estado"]);
 
                 $auxReturn = new ResponseJSON(ResponseJSONEstados::OK, $unaMesa);
@@ -101,7 +93,6 @@ class CabeceraPedidoDAO extends CabeceraPedido
 
     public static function CargarUno(CabeceraPedido $nuevoPedido)
     {
-        $auxReturn;
         $ubicacionParaMensaje = "CabeceraPedidoDAO->CargarUno";
 
         try
@@ -149,7 +140,7 @@ class CabeceraPedidoDAO extends CabeceraPedido
             $querySQL->bindValue(":idMesa", $idMesa);
 
             if (!$querySQL->execute()) {
-                $auxReturn = new responseJSON(responseJSONEstados::ERROR_BORRAR, "Ocurrio un error al intentar eliminar ($ubicacionParaMensaje)." . $unError->getMessage());
+                $auxReturn = new responseJSON(responseJSONEstados::ERROR_BORRAR, "Ocurrio un error al intentar eliminar ($ubicacionParaMensaje).");
             } else {
                 if ($querySQL->rowCount() > 0) {
                     $auxReturn = new responseJSON(responseJSONEstados::OK, "El sector se elimino correctamente");

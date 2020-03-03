@@ -1,11 +1,5 @@
 <?php
 
-require_once "../src/app/model/ItemPedido.php";
-require_once "../src/app/model/ItemPedidoRelacionado.php";
-require_once "../src/app/enum/EstadosItemPedidos.php";
-require_once "../src/app/api/Funciones.php";
-require_once "../src/app/Querys/QuerysSQL_Pedidos.php";
-
 class ItemPedidoDAO extends ItemPedido
 {
     #region Métodos estaticos

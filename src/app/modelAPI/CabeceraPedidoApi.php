@@ -1,8 +1,5 @@
 <?php
 
-require_once "../src/app/ModelDAO/CabeceraPedidoDAO.php";
-
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 

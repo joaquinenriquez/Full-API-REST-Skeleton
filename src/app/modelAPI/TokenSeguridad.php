@@ -54,7 +54,7 @@ class TokenSeguridad
     public static function getIdUsuarioActual($token){
         $auxReturn = self::VerificarToken($token);
         if ($auxReturn->getIsError() == false ){
-            $auxReturn = new Resultado(false, $auxReturn->getMessage()["id_usuario"], EstadosError::OK);
+            $auxReturn = new Resultado(false, $auxReturn->getMensaje()["id_usuario"], EstadosError::OK);
         }
     }
 

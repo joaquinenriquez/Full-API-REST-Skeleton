@@ -1,12 +1,5 @@
 <?php
 
-require_once '../src/app/model/sector.php';
-require_once '../src/app/modelPDO/AccesoDatos.php';
-require_once '../src/app/api/responseJSON.php';
-require_once '../src/app/enum/responseJSONEstados.php';
-require_once '../src/app/api/responseJSON.php';
-require_once '../src/app/enum/responseJSONEstados.php';
-
 class SectorDAO extends Sector
 {
     /* #region  Métodos */
@@ -31,7 +24,7 @@ class SectorDAO extends Sector
             // Si devuelve false ocurrio un error al ejecutar la query
             $estadoQuery = $querySQL->execute();
             if ($estadoQuery == false) {
-                $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer todos los sectores ($ubicacionParaMensaje).");
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer todos los sectores ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
             } else {
                 if ($querySQL->rowCount() > 0) {
                     // Para leer todos los registros que devuelve la consulta
@@ -54,7 +47,7 @@ class SectorDAO extends Sector
         } catch (PDOException $unErrorDB) {
             $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos (Sector->TraerTodos)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
         } catch (Exception $unError) {
-            $auxReturn = new Reusltado(true, "Ocurrio un error al intentar traer los datos (Sector->TraerTodos)" . $unError->getMessage(), EstadosError::ERROR_DB);
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer los datos (Sector->TraerTodos)" . $unError->getMessage(), EstadosError::ERROR_DB);
         }
 
         return $auxReturn;
@@ -135,7 +128,7 @@ class SectorDAO extends Sector
             $querySQL->bindValue(":idSector", $idSector);
 
             if (!$querySQL->execute()) {
-                $auxReturn = new responseJSON(responseJSONEstados::ERROR_BORRAR, "Ocurrio un error al intentar eliminar un sector (Sector->BorrarUno)" . $unError->getMessage());
+                $auxReturn = new responseJSON(responseJSONEstados::ERROR_BORRAR, "Ocurrio un error al intentar eliminar un sector (Sector->BorrarUno)");
             } else {
                 if ($querySQL->rowCount() > 0) {
                     $auxReturn = new responseJSON(responseJSONEstados::OK, "El sector se elimino correctamente");

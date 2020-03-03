@@ -1,8 +1,5 @@
 <?php
 
-require_once '../src/app/modelDAO/UsuarioDAO.php';
-require_once '../src/app/api/Funciones.php';
-
 class CabeceraPedido
 {
 

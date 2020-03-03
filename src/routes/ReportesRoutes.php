@@ -1,7 +1,5 @@
 <?php
 
-require_once '../src/app/reports/PDFs/ReporteLogins.php';
-require_once '../src/app/modelAPI/LogApi.php';
 
 // $app->group('/reportes/pdf', function () {
 

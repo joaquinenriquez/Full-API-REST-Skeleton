@@ -1,7 +1,5 @@
 <?php
 
-require_once '../src/app/model/Articulo.php';
-
 class ArticuloDAO extends Articulo
 {
 /* #region  Métodos */
@@ -61,7 +59,7 @@ class ArticuloDAO extends Articulo
         } catch (PDOException $unErrorDB) {
             $auxReturn = new Resultado(true, "Ocurrio un error con la conexion con la base de datos ($ubicacionParaMensaje)" . $unErrorDB->getMessage(), EstadosError::ERROR_DB);
         } catch (Exception $unError) {
-            $auxReturn = new Resutlado(true, "Ocurrio un error al intentar traer los datos ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_GENERAL);
+            $auxReturn = new Resultado(true, "Ocurrio un error al intentar traer los datos ($ubicacionParaMensaje)" . $unError->getMessage(), EstadosError::ERROR_GENERAL);
         }
 
         return $auxReturn;
@@ -72,7 +70,6 @@ class ArticuloDAO extends Articulo
         $ubicacionParaMensaje = "ArticuloDAO->TraerUno";
         $auxReturn = false;
         $unArticulo = new Articulo();
-        $rows;
 
         try
         {
@@ -164,7 +161,7 @@ class ArticuloDAO extends Articulo
 
             // Verificamos si la query se ejecuto correctamente
             if ($estadoQuery == false) {
-                $auxReturn = new Resultado(true, "Ocurrio un error al intentar eliminar ($ubicacionParaMensaje)." . $unError->getMessage(), EstadosError::ERROR_DB);
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar eliminar ($ubicacionParaMensaje).", EstadosError::ERROR_DB);
             } else {
                 // Verificamos si se obtuvieron resultados
                 if ($querySQL->rowCount() > 0) {

@@ -1,9 +1,5 @@
 <?php
 
-require_once "../src/app/ModelDAO/UsuarioDAO.php";
-require_once "../src/app/model/Usuario.php";
-require_once "../src/app/enum/EstadosUsuarios.php";
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -47,7 +43,6 @@ class UsuarioApi
         }
 
         if ($auxReturn->getStatus() == EstadosError::OK) {
-            ($idUsuario);
             $usuarioSeleccionado = new Usuario();
 
             // Formamos la salida
