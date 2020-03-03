@@ -587,10 +587,51 @@ class ItemPedidoDAO extends ItemPedido
         return $auxReturn;
     }
 
+    public static function CerrarItemPedido($idItemPedido)
+    {
+
+        $auxReturn = new Resultado(false, null, EstadosError::OK);
+        $ubicacionParaMensaje = "ItemPedidoDAO->CancelarItemPedido";
+
+        try {
+
+            $objetoAccesoDatos = AccesoDatos::dameUnObjetoAcceso();
+            $auxQuerySQL = QuerysSQL_Pedidos::CerrarItemPedido;
+            $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
+            
+            $querySQL->bindValue(":id_item_pedido", $idItemPedido);
+    
+            $estadoQuery = $querySQL->execute();
+
+            if ($estadoQuery == false) 
+            {
+                $auxReturn = new Resultado(true, "Ocurrio un error al intentar modificar el estado. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            } else if ($querySQL->rowCount() <= 0) 
+            {
+                $auxReturn = new Resultado(true, "No existen datos con ese id de item de pedido", EstadosError::SIN_RESULTADOS);
+            } else 
+            {   
+                $mensaje = "Se actualizo correctamente! El estado actual es: " . strtoupper(EstadosItemPedido::TraerEstadoPorId(10));
+                $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+            }
+
+        } catch (PDOException $unErrorDB) {
+            $mensaje = "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unErrorDB->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        } catch (Exception $unError) {
+            $mensaje = "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unError->getMessage();
+            $auxReturn = new Resultado(true, $mensaje, EstadosError::ERROR_DB);
+        }
+
+        return $auxReturn;
+    }
+
     public static function TraerItemsPedidoDeUnPedido($idPedido)
     {
 
     }
+
+
 
     #endregion
 }

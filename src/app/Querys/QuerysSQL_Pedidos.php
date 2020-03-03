@@ -14,6 +14,8 @@ class QuerysSQL_Pedidos
 
         public const CancelarItemPedido = "UPDATE itemsPedidos SET estado = 10 WHERE id_item_pedido = :id_item_pedido AND estado != 0";
 
+        public const CerrarItemPedido = "UPDATE itemsPedidos SET estado = 0 WHERE id_item_pedido = :id_item_pedido AND estado != 0";
+
         public const TraerPedidos = "SELECT
                 itemspedidos.id_item_pedido as id_item_pedido,
                 itemspedidos.fecha_hora_creacion as fecha_hora_creacion,
@@ -126,5 +128,21 @@ class QuerysSQL_Pedidos
                         AND itemspedidos.id_item_pedido = :id_item_pedido
 
                         LIMIT 1";
+
+
+        public const TraerCabeceraPedidoPorId = "SELECT 
+                                id_pedido, id_usuario, nombre_cliente, estado, codigo_amigable, id_mesa, fecha_inicio, fecha_fin, importe, contesto, calificacion_mesa, calificacion_cocinero, calificacion_mozo, calificacion_restaurante, comentarios
+                                FROM cabeceraspedidos
+                                WHERE id_pedido = :identificador_pedido";
+
+        public const TraerCabeceraPedidoPorCodigoAmigable = "SELECT 
+                                id_pedido, id_usuario, nombre_cliente, estado, codigo_amigable, id_mesa, fecha_inicio, fecha_fin, importe, contesto, calificacion_mesa, calificacion_cocinero, calificacion_mozo, calificacion_restaurante, comentarios
+                                FROM cabeceraspedidos
+                                WHERE codigo_amigable = :identificador_pedido";
+
+
+public const GuardarOpioniones = "UPDATE cabeceraspedidos 
+        SET contesto = :contesto, calificacion_mesa = :calificacion_mesa, calificacion_cocinero = :calificacion_cocinero, calificacion_mozo = :calificacion_mozo, calificacion_restaurante = :calificacion_restaurante, comentarios = :comentarios
+                WHERE id_pedido = :id_pedido";
 
 }

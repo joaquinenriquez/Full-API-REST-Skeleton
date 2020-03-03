@@ -1,6 +1,6 @@
 <?php
 
-class ArticuloDAO extends Articulo
+class ArticuloDAO
 {
 /* #region  Métodos */
     public static function TraerTodos()

@@ -210,11 +210,24 @@ class MesaAPI
                         $auxReturn = CabeceraPedidoDAO::TraerPedidoPorMesa($mesaSeleccionada->getIdMesa());
                         if ($auxReturn->getStatus() == EstadosError::OK)
                         {
+                            // Cerramos el encabezado
                             $idPedido = $auxReturn->getMensaje();
-                            $auxReturn = CabeceraPedidoDAO::CambiarEstado($idPedido, EstadosCabeceraPedido::CERRADO);
+                            $auxReturn = CabeceraPedidoDAO::CerrarPedido($idPedido);
                             if ($auxReturn->getStatus() == EstadosError::OK)
                             {
+                                // Cerramos todos los items del pedido
+                                if (isset($listadoDeItemsPedido)){
+                                    foreach ($listadoDeItemsPedido as $unItemPedido)
+                                    {
+                                      ItemPedidoDAO::CerrarItemPedido($unItemPedido->getIdItemPedido());
+                                    }
+                                }
+
+
+                            
+                                // Cerramos la mesa
                                 $auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::CERRADA);
+
                             }
                         }
                     }
@@ -255,11 +268,17 @@ class MesaAPI
                 {
                     $auxReturn = new Resultado(true, "La mesa $identificacionMesa se encuentra cerrada", EstadosError::ERROR_OPERACION_INVALIDA);
 
-                } else 
+                } else if ($mesaSeleccionada->getEstado() == EstadosMesas::CON_CLIENTES_PAGANDO[0])
+                {
+                    $auxReturn = new Resultado(true, "La mesa $identificacionMesa ya se pago", EstadosError::ERROR_OPERACION_INVALIDA);
+                } else
                 {
                     // Nos traemos todos los items de pedido de esa mesa
                     $auxReturn = ItemPedidoDAO::TraerPedidos(null, null, $mesaSeleccionada->getIdMesa(), null);
-                    if ($auxReturn->getStatus() == EstadosError::OK) 
+                    if ($auxReturn->getStatus() == EstadosError::SIN_RESULTADOS)
+                    {
+                        $auxReturn = new Resultado(false, "La mesa seleccionada no tiene ningun item de pedido realizado", EstadosError::ERROR_OPERACION_INVALIDA);
+                    } else if ($auxReturn->getStatus() == EstadosError::OK) 
                     {
                         $listadoDeItemsPedido = $auxReturn->getMensaje();
                         // Verificamos que no se encuentren pedidos con pendientes
@@ -280,23 +299,27 @@ class MesaAPI
                                 $unItemCobrado->total = $importeArticulo * $cantidad;
 
                                 $importeMesa = $importeMesa + ($importeArticulo * $cantidad);
+                                
+                                //Nos quedamos con el id pedido para luego actualizar el importe
+                                $idPedido = $unItemPedido->getIdPedido();
 
                                 array_push($listadoItemsCobrados, $unItemCobrado);
                             }
                         }
-                    }
 
-                    //$auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::CERRADA);
-                    if (count($listadoItemsCobrados) > 0) 
-                    {
-                        $mensaje = new stdClass();
-                        $mensaje->mensaje = "El importe total de la mesa es: " . $importeMesa;
-                        $mensaje->detalles = $listadoItemsCobrados;
-
-                        $auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::CON_CLIENTES_PAGANDO);
-                        if ($auxReturn->getStatus() == EstadosError::OK)
+                        if (count($listadoItemsCobrados) > 0) 
                         {
-                            $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+                            $mensaje = new stdClass();
+                            $mensaje->mensaje = "El importe total de la mesa es: " . $importeMesa;
+                            $mensaje->detalles = $listadoItemsCobrados;
+    
+                            $auxReturn = MesaDAO::CambiarEstado($mesaSeleccionada->getIdMesa(), EstadosMesas::CON_CLIENTES_PAGANDO);
+                            if ($auxReturn->getStatus() == EstadosError::OK)
+                            {
+                                // Actualizamos el importe
+                                CabeceraPedidoDAO::ActualizarImporte($idPedido, $importeMesa);
+                                $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+                            }
                         }
                     }
                 }

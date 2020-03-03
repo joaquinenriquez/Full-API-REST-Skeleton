@@ -25,7 +25,7 @@ class ItemPedidoApi
             // Verificamos que no se encuentre cerrada
             if ($mesaSeleccionada->getEstado() == EstadosMesas::CERRADA[0]) {
                 $auxReturn = new Resultado(true, "La mesa $identificacionMesa se encuentra cerrada. Primero abrala e intente nuevamente.", EstadosError::ERROR_OPERACION_INVALIDA);
-
+            
                 // SI la mesa tiene un estado distinto a cerrada
             } else  if ($mesaSeleccionada->getEstado() == EstadosMesas::CON_CLIENTES_PAGANDO[0]) {
                 $auxReturn = new Resultado(true, "No se pueden agregar mas items al pedido dado que la mesa se encuentra en estado CON CLIENTES PAGANDO", EstadosError::ERROR_OPERACION_INVALIDA);
@@ -403,7 +403,13 @@ class ItemPedidoApi
             {
                 // Actualizamos el estado del item pedido y actualizamos el estado de la mesa
                 $auxReturn = ItemPedidoDAO::ServirItemPedido($idItemPedido);
-                MesaDAO::CambiarEstado($itemPedidoSeleccionado->getIdMesa(), EstadosMesas::CON_CLIENTES_COMIENDO);
+                $mesaSeleccionada = MesaDAO::TraerUno($itemPedidoSeleccionado->getIdMesa())->getMensaje();
+
+                if ($mesaSeleccionada->getEstado() != EstadosMesas::CON_CLIENTES_PAGANDO[0])
+                {
+                    MesaDAO::CambiarEstado($itemPedidoSeleccionado->getIdMesa(), EstadosMesas::CON_CLIENTES_COMIENDO);
+                }
+                
             }
         }
 

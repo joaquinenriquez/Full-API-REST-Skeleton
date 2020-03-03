@@ -20,7 +20,6 @@ include_once './src/app/middleware/UsuarioMiddleware.php';
 
 include_once './src/app/model/Articulo.php';
 include_once './src/app/model/CabeceraPedido.php';
-include_once './src/app/model/Encuesta.php';
 include_once './src/app/model/ItemPedido.php';
 include_once './src/app/model/ItemPedidoRelacionado.php';
 include_once './src/app/model/Log.php';

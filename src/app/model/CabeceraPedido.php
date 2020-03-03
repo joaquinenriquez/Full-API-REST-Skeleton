@@ -14,7 +14,14 @@ class CabeceraPedido
     private $foto;
     private $fechaInicio;
     private $fechaFin;
+    private $importe;
 
+    private $contesto;
+    private $calificacion_mesa;
+    private $calificacion_mozo;
+    private $calificacion_cocinero;
+    private $calificacion_restaurante;
+    private $comentarios;
     
 #endregion
 
@@ -231,8 +238,149 @@ public function __construct()
         return $this;
     }
 
+    
+    /**
+     * Get the value of contesto
+     */ 
+    public function getContesto()
+    {
+        return $this->contesto;
+    }
+
+    /**
+     * Set the value of contesto
+     *
+     * @return  self
+     */ 
+    public function setContesto($contesto)
+    {
+        $this->contesto = $contesto;
+
+        return $this;
+    }
+
+        /**
+     * Get the value of calificacion_mesa
+     */ 
+    public function getCalificacion_mesa()
+    {
+        return $this->calificacion_mesa;
+    }
+
+    /**
+     * Set the value of calificacion_mesa
+     *
+     * @return  self
+     */ 
+    public function setCalificacion_mesa($calificacion_mesa)
+    {
+        $this->calificacion_mesa = $calificacion_mesa;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of calificacion_mozo
+     */ 
+    public function getCalificacion_mozo()
+    {
+        return $this->calificacion_mozo;
+    }
+
+    /**
+     * Set the value of calificacion_mozo
+     *
+     * @return  self
+     */ 
+    public function setCalificacion_mozo($calificacion_mozo)
+    {
+        $this->calificacion_mozo = $calificacion_mozo;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of calificacion_cocinero
+     */ 
+    public function getCalificacion_cocinero()
+    {
+        return $this->calificacion_cocinero;
+    }
+
+    /**
+     * Set the value of calificacion_cocinero
+     *
+     * @return  self
+     */ 
+    public function setCalificacion_cocinero($calificacion_cocinero)
+    {
+        $this->calificacion_cocinero = $calificacion_cocinero;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of calificacion_restaurante
+     */ 
+    public function getCalificacion_restaurante()
+    {
+        return $this->calificacion_restaurante;
+    }
+
+    /**
+     * Set the value of calificacion_restaurante
+     *
+     * @return  self
+     */ 
+    public function setCalificacion_restaurante($calificacion_restaurante)
+    {
+        $this->calificacion_restaurante = $calificacion_restaurante;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of comentarios
+     */ 
+    public function getComentarios()
+    {
+        return $this->comentarios;
+    }
+
+    /**
+     * Set the value of comentarios
+     *
+     * @return  self
+     */ 
+    public function setComentarios($comentarios)
+    {
+        $this->comentarios = $comentarios;
+
+        return $this;
+    }
 
 
 #endregion
 
+
+
+    /**
+     * Get the value of importe
+     */ 
+    public function getImporte()
+    {
+        return $this->importe;
+    }
+
+    /**
+     * Set the value of importe
+     *
+     * @return  self
+     */ 
+    public function setImporte($importe)
+    {
+        $this->importe = $importe;
+
+        return $this;
+    }
 }
