@@ -368,7 +368,7 @@ class CabeceraPedidoDAO
         return $auxReturn;
     }
 
-    public static Function GuardarOpioniones($identificadorPedido, $cabeceraPedido)
+    public static Function GuardarOpioniones($identificadorPedido, $parametros)
     {
         $auxReturn = new Resultado(false, null, EstadosError::OK);
         $ubicacionParaMensaje = "CambeceraPedido->GuardarOpioniones";
@@ -379,28 +379,38 @@ class CabeceraPedidoDAO
             $auxQuerySQL = QuerysSQL_Pedidos::GuardarOpioniones;
             $querySQL = $objetoAccesoDatos->RetornarConsulta($auxQuerySQL);
 
+            // $querySQL->bindValue(":contesto", true);
+            // $querySQL->bindValue(":calificacion_mesa", $cabeceraPedido->getCalifcacion_mesa());
+            // $querySQL->bindValue(":calificacion_cocinero", $cabeceraPedido->getCalificacion_cocinero());
+            // $querySQL->bindValue(":calificacion_mozo", $cabeceraPedido->getCalificacion_mozo());
+            // $querySQL->bindValue(":calificacion_restaurante", $cabeceraPedido->getCalificacion_restaurante());
+            // $querySQL->bindValue(":comentarios", $cabeceraPedido->getComentarios());
+            // $querySQL->bindValue(":id_pedido", $cabeceraPedido->getIdPedido());
+            // var_dump($cabeceraPedido);
+
             $querySQL->bindValue(":contesto", true);
-            $querySQL->bindValue(":calificacion_mesa", $cabeceraPedido->getCalifcacion_mesa());
-            $querySQL->bindValue(":calificacion_cocinero", $cabeceraPedido->getCalificacion_cocinero());
-            $querySQL->bindValue(":calificacion_mozo", $cabeceraPedido->getCalificacion_mozo());
-            $querySQL->bindValue(":calificacion_restaurante", $cabeceraPedido->getCalificacion_restaurante());
-            $querySQL->bindValue(":comentarios", $cabeceraPedido->getComentarios());
-            $querySQL->bindValue(":id_pedido", $cabeceraPedido->getIdPedido());
+            $querySQL->bindValue(":calificacion_mesa", $parametros["calificacion_mesa"]);
+            $querySQL->bindValue(":calificacion_cocinero", $parametros["calificacion_cocinero"]);
+            $querySQL->bindValue(":calificacion_mozo", $parametros["calificacion_mozo"]);
+            $querySQL->bindValue(":calificacion_restaurante", $parametros["calificacion_restaurante"]);
+            $querySQL->bindValue(":comentarios",$parametros["comentarios"]);
+            $querySQL->bindValue(":id_pedido", $identificadorPedido);
 
-            $estadoQuery = $querySQL->execute();
 
-            if ($estadoQuery == false) {
-                $auxReturn = new Resultado(true, "Ocurrio un error al intentar gudardarRespuestas. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
+            // $estadoQuery = $querySQL->execute();
 
-            } else if ($querySQL->rowCount() <= 0) 
-            {
-                $auxReturn = new Resultado(true, "No existen un pedido con ese id o se encuentra deshabilitada", EstadosError::SIN_RESULTADOS);
+            // if ($estadoQuery == false) {
+            //     $auxReturn = new Resultado(true, "Ocurrio un error al intentar gudardarRespuestas. ($ubicacionParaMensaje)", EstadosError::ERROR_DB);
 
-            } else 
-            {
-                $mensaje = "Se actualizo correctamente el estado!";
-                $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
-            }
+            // } else if ($querySQL->rowCount() <= 0) 
+            // {
+            //     $auxReturn = new Resultado(true, "No existen un pedido con ese id o se encuentra deshabilitada", EstadosError::SIN_RESULTADOS);
+
+            // } else 
+            // {
+            //     $mensaje = "Se actualizo correctamente el estado!";
+            //     $auxReturn = new Resultado(false, $mensaje, EstadosError::OK);
+            // }
 
         } catch (PDOException $unErrorDB) {
             $auxReturn = new Resultado(true, "Ocurrio un error al intentar actualizar. ($ubicacionParaMensaje). Detalles: " . $unErrorDB->getMessage(), EstadosError::ERROR_DB);

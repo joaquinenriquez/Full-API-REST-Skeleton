@@ -33,13 +33,13 @@ class CabeceraPedidoApi
 
                 $unaCabeceraPedido = new CabeceraPedido();
 
-                $unaCabeceraPedido->setCalificacion_restaurante($calificacionRestaurante);
-                $unaCabeceraPedido->setCalificacion_mozo($calificacionMozo);
-                $unaCabeceraPedido->setCalificacion_cocinero($calificacionCocinero);
-                $unaCabeceraPedido->setCalificacion_mozo($calificacionMesa);
-                $unaCabeceraPedido->setComentarios($comentarios);
+                // $unaCabeceraPedido->setCalificacion_restaurante($calificacionRestaurante);
+                // $unaCabeceraPedido->setCalificacion_mozo($calificacionMozo);
+                // $unaCabeceraPedido->setCalificacion_cocinero($calificacionCocinero);
+                // $unaCabeceraPedido->setCalificacion_mesa($calificacionMesa);
+                // $unaCabeceraPedido->setComentarios($comentarios);
 
-                $auxReturn = CabeceraPedidoDAO::GuardarOpioniones($pedidoSeleccionado->getIdPedido(), $unaCabeceraPedido);
+                $auxReturn = CabeceraPedidoDAO::GuardarOpioniones($pedidoSeleccionado->getIdPedido(), $parametros);
             }
 
             $response->getBody()->write(json_encode($auxReturn));
