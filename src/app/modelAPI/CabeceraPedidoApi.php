@@ -39,8 +39,15 @@ class CabeceraPedidoApi
                 $unaCabeceraPedido->setCalificacion_mozo($calificacionMesa);
                 $unaCabeceraPedido->setComentarios($comentarios);
 
-                CabeceraPedidoDAO::GuardarOpioniones($pedidoSeleccionado->getIdPedido(), $unaCabeceraPedido);
+                $auxReturn = CabeceraPedidoDAO::GuardarOpioniones($pedidoSeleccionado->getIdPedido(), $unaCabeceraPedido);
             }
+
+            $response->getBody()->write(json_encode($auxReturn));
+            $response = $response->withHeader('Content-Type', 'application/json');
+            $response = $response->withStatus($auxReturn->getStatus());
+    
+            return $response;
+    
         }
 
 
